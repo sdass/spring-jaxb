@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd" >
+    
+    <!-- Uncomment and add your base-package here: -->
+         <context:component-scan base-package="com.subra"/>
+         
+         <oxm:jaxb2-marshaller id="jaxbMarshallerBean">
+         	<oxm:class-to-be-bound name="com.subra.Employee"/>
+         	<oxm:class-to-be-bound name="com.subra.ManagerInher"/>
+         	<oxm:class-to-be-bound name="com.subra.funding.model.CustomerPullRequestModel"/>
+			<oxm:class-to-be-bound name="com.subra.funding.model.Fmxrequestempty.General"/>
+			<oxm:class-to-be-bound name="com.subra.funding.model.ParamCustomerPullRequest"/>
+			<oxm:class-to-be-bound name="com.subra.funding.model.RequestEmpty"/>
+			<oxm:class-to-be-bound name="com.subra.funding.model.ParamCustomerPullRequest.Field"/>
+         	
+         </oxm:jaxb2-marshaller>
+           
+
+</beans>
