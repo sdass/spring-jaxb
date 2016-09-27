@@ -38,7 +38,8 @@ public class MainDriver {
 		//account 2nd
 		BigInteger bigint = BigInteger.valueOf(1523); 
 		//param 3rd
-		ParamCustomerPullRequest customerPullParam = new ParamCustomerPullRequest(bigint, fieldList);
+		ParamCustomerPullRequest customerPullParam = new ParamCustomerPullRequest(bigint, fieldList); //works
+		//customerPullParam = null; //testing when param is not there
 		
 		//request 4th
 		RequestEmpty<ParamCustomerPullRequest> requestCustomerPullwithParam = 
@@ -70,7 +71,7 @@ public class MainDriver {
 
 		  
 		  
-		  System.out.println("Manager XML Created Sucessfully");		
+		  System.out.println("XML Created Sucessfully");		
 		
 	}
 	

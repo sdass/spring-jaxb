@@ -2,6 +2,7 @@ package com.subra.funding.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -14,6 +15,7 @@ public class RequestEmpty<T> {
     @XmlElement(required = true)
     protected String function;
     //protected Fmxrequestempty.Request.Param param;
+    @XmlAnyElement(lax=true)  //critical line it works
     protected T param;
     
     
