@@ -22,7 +22,9 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import com.drfbets.funding.model.AddressPullRequestParam;
+import com.drfbets.funding.model.AddressPullResponseResult;
 import com.drfbets.funding.model.CustomerPullResponseResult;
+import com.drfbets.funding.model.FundingMethodPullRequestParam;
 import com.subra.funding.model.CustomerPullRequestModel;
 import com.subra.funding.model.Fmxrequestempty;
 import com.subra.funding.model.Fmxrequestempty.General;
@@ -32,15 +34,63 @@ import com.subra.funding.model.RequestEmpty;
 import com.subra.funding.model.ParamCustomerPullRequest.Field;
 import com.subra.funding.model.Response;
 
-public class ResponseMainDriver {
+public class ResponseRequestMainDriver {
 
 	public static void main(String [] args) throws XmlMappingException, IOException{
 		
 		//preapareAddressPullString();
-		prepareCustomerPullResponseString();
+		//prepareCustomerPullResponseString();
 		//prepareCustomerPullRequestString();
-		  
+		//prepareAddressPullResponseString();
+		prepareFundingMethodPullRequestString();
 		  System.out.println("XML Created Sucessfully");		
+		
+	}
+	
+	public static void prepareFundingMethodPullRequestString() throws XmlMappingException, IOException{
+		//prepare request[]
+		//1. field
+		List<FundingMethodPullRequestParam.Field> field = new  ArrayList<FundingMethodPullRequestParam.Field>();
+		
+		FundingMethodPullRequestParam.Field field1 = new FundingMethodPullRequestParam.Field("field1");
+		FundingMethodPullRequestParam.Field field2 = new FundingMethodPullRequestParam.Field("field2");
+		field.add(field1); field.add(field2);
+		//field = null;
+		//account 2nd
+		BigInteger bigint = BigInteger.valueOf(7523); 
+		BigInteger fundingmethodid = BigInteger.valueOf(77);
+		//fundingmethodid = null;
+		//param 3rd
+		//FundingMethodPullRequestParam fundingMethodPullRequestParam = new FundingMethodPullRequestParam(bigint, "type_ach", fundingmethodid, field);
+		FundingMethodPullRequestParam fundingMethodPullRequestParam = new FundingMethodPullRequestParam(bigint, null, fundingmethodid, field);
+		
+		//request 4th
+		RequestEmpty<FundingMethodPullRequestParam> requestFundingMethodpullRequestParam = 
+				new RequestEmpty<FundingMethodPullRequestParam>("categoryName", "functionName", fundingMethodPullRequestParam );
+		
+		ArrayList<RequestEmpty<FundingMethodPullRequestParam>> requests = new ArrayList<RequestEmpty<FundingMethodPullRequestParam>>(); //1 only
+		requests.add(requestFundingMethodpullRequestParam);
+
+		//5th and final fill frmrequest
+		Fmxrequestempty<FundingMethodPullRequestParam> objFundingMethodPullRequestModel = new Fmxrequestempty<FundingMethodPullRequestParam>();
+
+
+		//set gneral
+		String timestamp = new Timestamp(new Date().getTime()).toString();	
+		objFundingMethodPullRequestModel.setGeneral(new General("09-30-2016 :07:10:45", new General.Auth("sdass", "qqq123")));	
+		objFundingMethodPullRequestModel.setRequest(requests);
+
+		
+		System.out.println("whatObj=" + objFundingMethodPullRequestModel.toString());
+		//System.exit(1);
+		// execute for jaxb done
+		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+		Map<String, Object> prop = new HashMap<String, Object>();
+		prop.put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, true); //for debugging
+		marshaller.setMarshallerProperties(prop);
+		marshaller.setClassesToBeBound(Fmxrequestempty.class, RequestEmpty.class, FundingMethodPullRequestParam.class);		
+		marshaller.marshal(objFundingMethodPullRequestModel, new StreamResult(new FileWriter("fundingMethodPullrequest.xml")));
+
 		
 	}
 	
@@ -62,7 +112,7 @@ public class ResponseMainDriver {
 		ArrayList<RequestEmpty<ParamCustomerPullRequest>> requests = new ArrayList<RequestEmpty<ParamCustomerPullRequest>>(); //1 only
 		requests.add(requestCustomerPullwithParam);
 
-		
+
 		//5th and final fill frmrequest
 		//CustomerPullRequestModel objCustomerPullRequestModel = new CustomerPullRequestModel();
 		Fmxrequestempty<ParamCustomerPullRequest> objCustomerPullRequestModel = new Fmxrequestempty<ParamCustomerPullRequest>();
@@ -83,6 +133,40 @@ public class ResponseMainDriver {
 		marshaller.setClassesToBeBound(Fmxrequestempty.class, RequestEmpty.class, ParamCustomerPullRequest.class);		
 		marshaller.marshal(objCustomerPullRequestModel, new StreamResult(new FileWriter("customerPullrequest.xml")));
 
+		
+	}
+
+	public static void prepareAddressPullResponseString() throws XmlMappingException, IOException{
+	
+		// 1. fillup field
+		AddressPullResponseResult.Address.Field field1 = new AddressPullResponseResult.Address.Field("AddrName1", "AddrValue1");
+		//2. make address
+		AddressPullResponseResult.Address address1 = new AddressPullResponseResult.Address("typeResidence", field1);
+		
+		//3. fillout result [addresses list 1st]
+		List<AddressPullResponseResult.Address> addresses =  new ArrayList<AddressPullResponseResult.Address>();
+		addresses.add(address1);
+		AddressPullResponseResult addressPullResponseResult = new AddressPullResponseResult(addresses);
+		//3. prepare response [1st populate error]
+		//Response.Error error = new Response.Error(BigInteger.valueOf(3), "errorMsg");		
+		Response.Error error = new Response.Error(BigInteger.valueOf(0), "");
+		
+		Response<AddressPullResponseResult> response = new  Response<AddressPullResponseResult>(error, "categoryName", "functionName", addressPullResponseResult);
+		
+		//4. fillout Fmxresponse [1st prepare list of Response]
+		List<Response<AddressPullResponseResult>> responseList = new ArrayList<Response<AddressPullResponseResult>>();
+		responseList.add(response);
+		Fmxresponse<AddressPullResponseResult> objfmxresponse =  new Fmxresponse<AddressPullResponseResult>(responseList);
+		System.out.println("whatObj=" + objfmxresponse.toString());
+		//System.exit(1);
+		// execute for jaxb 
+		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+		Map<String, Object> prop = new HashMap<String, Object>();
+		prop.put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, true); //for debugging
+		marshaller.setMarshallerProperties(prop);
+		marshaller.setClassesToBeBound(Fmxresponse.class, Response.class, 
+				AddressPullResponseResult.class);		
+		marshaller.marshal(objfmxresponse, new StreamResult(new FileWriter("addressPullresponseResult.xml")));
 		
 	}
 	
