@@ -25,6 +25,7 @@ import com.drfbets.funding.model.AddressPullRequestParam;
 import com.drfbets.funding.model.AddressPullResponseResult;
 import com.drfbets.funding.model.CustomerPullResponseResult;
 import com.drfbets.funding.model.FundingMethodPullRequestParam;
+import com.drfbets.funding.model.FundingMethodPullResponseResult;
 import com.subra.funding.model.CustomerPullRequestModel;
 import com.subra.funding.model.Fmxrequestempty;
 import com.subra.funding.model.Fmxrequestempty.General;
@@ -43,6 +44,7 @@ public class ResponseRequestMainDriver {
 		//prepareCustomerPullRequestString();
 		//prepareAddressPullResponseString();
 		prepareFundingMethodPullRequestString();
+		prepareFundingMethodPullResponseString();
 		  System.out.println("XML Created Sucessfully");		
 		
 	}
@@ -170,9 +172,43 @@ public class ResponseRequestMainDriver {
 		
 	}
 	
+	public static void prepareFundingMethodPullResponseString() throws XmlMappingException, IOException{
+		//1. fill out field list
+		FundingMethodPullResponseResult.Fundingmethod.Field field1 = new FundingMethodPullResponseResult.Fundingmethod.Field("field1", "value1");
+		FundingMethodPullResponseResult.Fundingmethod.Field field2 = new FundingMethodPullResponseResult.Fundingmethod.Field("field2", "value2");
+		List<FundingMethodPullResponseResult.Fundingmethod.Field> field = new ArrayList<FundingMethodPullResponseResult.Fundingmethod.Field>();
+		field.add(field1); field.add(field2);
+		//2. create fundingmethod object
+		BigInteger bigint = BigInteger.valueOf(200);
+		FundingMethodPullResponseResult.Fundingmethod fundingMethod1 = new FundingMethodPullResponseResult.Fundingmethod(bigint, field);
+		FundingMethodPullResponseResult.Fundingmethod fundingMethod2 = new FundingMethodPullResponseResult.Fundingmethod(new BigInteger("9923"), field);
+		
+		List<FundingMethodPullResponseResult.Fundingmethod> fundingMehtodList = new ArrayList<FundingMethodPullResponseResult.Fundingmethod>();
+		fundingMehtodList.add(fundingMethod1);
+		fundingMehtodList.add(fundingMethod2);
+		//3. create result object
+		FundingMethodPullResponseResult result = new FundingMethodPullResponseResult(fundingMehtodList);
+		//4. prepare response
+		Response.Error error = new Response.Error(BigInteger.valueOf(0), "");
+		Response<FundingMethodPullResponseResult> response1 = new  Response<FundingMethodPullResponseResult>(error, "myCategory", "Myfunction", result);
+		//5. last step: prepae formresponse
+		List<Response<FundingMethodPullResponseResult>> responseList = new ArrayList<Response<FundingMethodPullResponseResult>>();
+		responseList.add(response1);
+		Fmxresponse<FundingMethodPullResponseResult> objfmxresponse = new Fmxresponse<FundingMethodPullResponseResult>(responseList); 
+		System.out.println("whatObj=" + objfmxresponse.toString());
+		//System.exit(1);
+		// execute for jaxb 
+		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+		Map<String, Object> prop = new HashMap<String, Object>();
+		prop.put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, true); //for debugging
+		marshaller.setMarshallerProperties(prop);
+		marshaller.setClassesToBeBound(Fmxresponse.class, Response.class, 
+				FundingMethodPullResponseResult.class);		
+		marshaller.marshal(objfmxresponse, new StreamResult(new FileWriter("fundingMethodPullResponsetring.xml")));
+		
+	}
 	
 	public static void prepareCustomerPullResponseString() throws XmlMappingException, IOException {
-
 		//1. fill out field list
 		ArrayList<CustomerPullResponseResult.Field> fieldList = new ArrayList<CustomerPullResponseResult.Field>();
 		CustomerPullResponseResult.Field field1 = new CustomerPullResponseResult.Field("name1", "value1");
