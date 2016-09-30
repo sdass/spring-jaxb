@@ -41,19 +41,15 @@ public class AddressPullResponseResult {
         @XmlElement(required = true)
         protected String type;
         @XmlElement(required = true)
-        protected AddressPullResponseResult.Address.Field field;
+        //protected AddressPullResponseResult.Address.Field field; correction needed
+        protected List<AddressPullResponseResult.Address.Field> field;
         
         public Address(){}
         
-        public Address(String type, Field field) {
+		public Address(String type, List<Field> field) {
 			super();
 			this.type = type;
 			this.field = field;
-		}
-
-		@Override
-		public String toString() {
-			return "Address [type=" + type + ", field=" + field + "]";
 		}
 
 		public String getType() {
@@ -63,14 +59,15 @@ public class AddressPullResponseResult {
         public void setType(String value) {
             this.type = value;
         }
+       
+		public List<AddressPullResponseResult.Address.Field> getField() {
+			return field;
+		}
 
-        public AddressPullResponseResult.Address.Field getField() {
-            return field;
-        }
+		public void setField(List<AddressPullResponseResult.Address.Field> field) {
+			this.field = field;
+		}
 
-        public void setField(AddressPullResponseResult.Address.Field value) {
-            this.field = value;
-        }
 
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {         "name",          "value"     })
@@ -111,6 +108,11 @@ public class AddressPullResponseResult {
             }
 
         }
+
+		@Override
+		public String toString() {
+			return "Address [type=" + type + ", field=" + field + "]";
+		}
 
     }
 
