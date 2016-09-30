@@ -52,8 +52,8 @@ public class ResponseRequestMainDriver {
 		//1. field
 		List<FundingMethodPullRequestParam.Field> field = new  ArrayList<FundingMethodPullRequestParam.Field>();
 		
-		FundingMethodPullRequestParam.Field field1 = new FundingMethodPullRequestParam.Field("field1");
-		FundingMethodPullRequestParam.Field field2 = new FundingMethodPullRequestParam.Field("field2");
+		FundingMethodPullRequestParam.Field field1 = new FundingMethodPullRequestParam.Field("field1", "value1");
+		FundingMethodPullRequestParam.Field field2 = new FundingMethodPullRequestParam.Field("field2", "value2");
 		field.add(field1); field.add(field2);
 		//field = null;
 		//account 2nd
@@ -77,7 +77,7 @@ public class ResponseRequestMainDriver {
 
 		//set gneral
 		String timestamp = new Timestamp(new Date().getTime()).toString();	
-		objFundingMethodPullRequestModel.setGeneral(new General("09-30-2016 :07:10:45", new General.Auth("sdass", "qqq123")));	
+		objFundingMethodPullRequestModel.setGeneral(new General("09-30-2016 :07:10:47", new General.Auth("sdass", "qqq123")));	
 		objFundingMethodPullRequestModel.setRequest(requests);
 
 		

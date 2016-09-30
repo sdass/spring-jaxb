@@ -77,17 +77,21 @@ public class FundingMethodPullRequestParam {
 
 
 	@XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {        "name"        })
+    @XmlType(name = "", propOrder = {        "name",  "value"     })
     public static class Field {
 
 		@XmlElement(required = true)
         protected String name;
+		
+        @XmlElement(required = true)
+        protected String value;
 
     	public Field(){}
     	
-        public Field(String name) {
+        public Field(String name, String value) {
 			super();
 			this.name = name;
+			this.value = value;
 		}
 
         public String getName() {
@@ -97,10 +101,18 @@ public class FundingMethodPullRequestParam {
         public void setName(String value) {
             this.name = value;
         }
+        
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
 
 		@Override
 		public String toString() {
-			return "Field [name=" + name + "]";
+			return "Field [name=" + name + ", value=" + value + "]";
 		}
         
         
