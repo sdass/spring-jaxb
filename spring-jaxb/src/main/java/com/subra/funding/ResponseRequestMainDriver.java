@@ -186,6 +186,7 @@ public class ResponseRequestMainDriver {
 		List<FundingMethodPullResponseResult.Fundingmethod> fundingMehtodList = new ArrayList<FundingMethodPullResponseResult.Fundingmethod>();
 		fundingMehtodList.add(fundingMethod1);
 		fundingMehtodList.add(fundingMethod2);
+		fundingMehtodList = null; //funding method edit simulate string
 		//3. create result object
 		FundingMethodPullResponseResult result = new FundingMethodPullResponseResult(fundingMehtodList);
 		//4. prepare response
@@ -204,7 +205,7 @@ public class ResponseRequestMainDriver {
 		marshaller.setMarshallerProperties(prop);
 		marshaller.setClassesToBeBound(Fmxresponse.class, Response.class, 
 				FundingMethodPullResponseResult.class);		
-		marshaller.marshal(objfmxresponse, new StreamResult(new FileWriter("fundingMethodPullResponsetring.xml")));
+		marshaller.marshal(objfmxresponse, new StreamResult(new FileWriter("fundingMethodPullResponstring.xml")));
 		
 	}
 	
