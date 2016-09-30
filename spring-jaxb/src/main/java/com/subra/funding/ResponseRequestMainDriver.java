@@ -55,7 +55,7 @@ public class ResponseRequestMainDriver {
 		FundingMethodPullRequestParam.Field field1 = new FundingMethodPullRequestParam.Field("field1", "value1");
 		FundingMethodPullRequestParam.Field field2 = new FundingMethodPullRequestParam.Field("field2", "value2");
 		field.add(field1); field.add(field2);
-		//field = null;
+		field = null;
 		//account 2nd
 		BigInteger bigint = BigInteger.valueOf(7523); 
 		BigInteger fundingmethodid = BigInteger.valueOf(77);

@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name="param")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {  "account",     "type",      "fundingmethodid",   "field"      })
+//in Funding Method delete Request fundingmehodid comes before account. Need to test.
 public class FundingMethodPullRequestParam {
 
     @XmlElement(required = true)
