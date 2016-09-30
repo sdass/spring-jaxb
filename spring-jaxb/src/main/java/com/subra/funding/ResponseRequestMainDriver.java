@@ -42,9 +42,9 @@ public class ResponseRequestMainDriver {
 		//preapareAddressPullString();
 		//prepareCustomerPullResponseString();
 		//prepareCustomerPullRequestString();
-		//prepareAddressPullResponseString();
-		prepareFundingMethodPullRequestString();
-		prepareFundingMethodPullResponseString();
+		prepareAddressPullResponseString();
+		//prepareFundingMethodPullRequestString();
+		//prepareFundingMethodPullResponseString();
 		  System.out.println("XML Created Sucessfully");		
 		
 	}
@@ -142,12 +142,25 @@ public class ResponseRequestMainDriver {
 	
 		// 1. fillup field
 		AddressPullResponseResult.Address.Field field1 = new AddressPullResponseResult.Address.Field("AddrName1", "AddrValue1");
-		//2. make address
-		AddressPullResponseResult.Address address1 = new AddressPullResponseResult.Address("typeResidence", field1);
+		AddressPullResponseResult.Address.Field field1a = new AddressPullResponseResult.Address.Field("AddrName11", "AddrValue11");
+		AddressPullResponseResult.Address.Field field1b = new AddressPullResponseResult.Address.Field("AddrName22", "AddrValue22");
+		//make fieldList
+		List<AddressPullResponseResult.Address.Field> addrList1 = new ArrayList<AddressPullResponseResult.Address.Field>();
+		addrList1.add(field1); addrList1.add(field1a); addrList1.add(field1b);
+		//2. make address 1 of 2
+		AddressPullResponseResult.Address address1 = new AddressPullResponseResult.Address("type_residence", addrList1);
+
+		List<AddressPullResponseResult.Address.Field> addrList2 = new ArrayList<AddressPullResponseResult.Address.Field>();
+		//2b. make address 2 of 2
+		AddressPullResponseResult.Address.Field field2 = new AddressPullResponseResult.Address.Field("AddrName2", "AddrValue2");
+		AddressPullResponseResult.Address.Field field2b = new AddressPullResponseResult.Address.Field("AddrName2bb", "AddrValue2bb");
+		addrList2.add(field2); addrList2.add(field2b);
+		AddressPullResponseResult.Address address2 = new AddressPullResponseResult.Address("type_mailing", addrList2);
 		
 		//3. fillout result [addresses list 1st]
 		List<AddressPullResponseResult.Address> addresses =  new ArrayList<AddressPullResponseResult.Address>();
-		addresses.add(address1);
+		addresses.add(address1); 
+		addresses.add(address2);
 		AddressPullResponseResult addressPullResponseResult = new AddressPullResponseResult(addresses);
 		//3. prepare response [1st populate error]
 		//Response.Error error = new Response.Error(BigInteger.valueOf(3), "errorMsg");		
@@ -186,7 +199,7 @@ public class ResponseRequestMainDriver {
 		List<FundingMethodPullResponseResult.Fundingmethod> fundingMehtodList = new ArrayList<FundingMethodPullResponseResult.Fundingmethod>();
 		fundingMehtodList.add(fundingMethod1);
 		fundingMehtodList.add(fundingMethod2);
-		fundingMehtodList = null; //funding method edit simulate string
+		//fundingMehtodList = null; //funding method edit simulate string
 		//3. create result object
 		FundingMethodPullResponseResult result = new FundingMethodPullResponseResult(fundingMehtodList);
 		//4. prepare response
