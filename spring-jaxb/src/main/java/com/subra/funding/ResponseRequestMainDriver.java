@@ -190,7 +190,8 @@ public class ResponseRequestMainDriver {
 		//3. create result object
 		FundingMethodPullResponseResult result = new FundingMethodPullResponseResult(fundingMehtodList);
 		//4. prepare response
-		Response.Error error = new Response.Error(BigInteger.valueOf(0), "");
+		//Response.Error error = new Response.Error(BigInteger.valueOf(0), "");
+		Response.Error error = new Response.Error(BigInteger.valueOf(5), "Invalid");
 		Response<FundingMethodPullResponseResult> response1 = new  Response<FundingMethodPullResponseResult>(error, "myCategory", "Myfunction", result);
 		//5. last step: prepae formresponse
 		List<Response<FundingMethodPullResponseResult>> responseList = new ArrayList<Response<FundingMethodPullResponseResult>>();
