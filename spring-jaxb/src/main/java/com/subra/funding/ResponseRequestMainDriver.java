@@ -3,8 +3,10 @@ package com.subra.funding;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import com.drfbets.funding.model.AddressPullResponseResult;
 import com.drfbets.funding.model.CustomerPullResponseResult;
 import com.drfbets.funding.model.FundingMethodPullRequestParam;
 import com.drfbets.funding.model.FundingMethodPullResponseResult;
+import com.drfbets.funding.model.LimitAvailableRequestParam;
 import com.subra.funding.model.CustomerPullRequestModel;
 import com.subra.funding.model.Fmxrequestempty;
 import com.subra.funding.model.Fmxrequestempty.General;
@@ -42,13 +45,59 @@ public class ResponseRequestMainDriver {
 		//preapareAddressPullString();
 		//prepareCustomerPullResponseString();
 		//prepareCustomerPullRequestString();
-		prepareAddressPullResponseString();
+		//prepareAddressPullResponseString();
 		//prepareFundingMethodPullRequestString();
 		//prepareFundingMethodPullResponseString();
+		prepareLimitRequestParamString();
 		  System.out.println("XML Created Sucessfully");		
 		
 	}
 	
+	public static void prepareLimitRequestParamString() throws XmlMappingException, IOException{
+		//use this of jaxb for flexible manipulation
+		
+		//prepare param to make request
+		BigInteger bigint = BigInteger.valueOf(9523); 
+		//LimitAvailableRequestParam limitAvailableRequestParam = new LimitAvailableRequestParam(bigint , "type_ach");
+		LimitAvailableRequestParam limitAvailableRequestParam = new LimitAvailableRequestParam(bigint , null);
+		//make request
+		RequestEmpty<LimitAvailableRequestParam> request = new RequestEmpty<LimitAvailableRequestParam>("categoryName", "function_name", limitAvailableRequestParam);
+		//make fmxrequest
+		List<RequestEmpty<LimitAvailableRequestParam>> requests = new ArrayList<RequestEmpty<LimitAvailableRequestParam>>();
+		requests.add(request);
+		Fmxrequestempty<LimitAvailableRequestParam> objLimitAvalableRequest = new Fmxrequestempty<LimitAvailableRequestParam>();
+		objLimitAvalableRequest.setRequest(requests);
+		//set gneral
+		//String timestamp = new Timestamp(new Date().getTime()).toString();	
+		String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());	
+
+		objLimitAvalableRequest.setGeneral(new General(timestamp, new General.Auth("sdass", "qqq123")));
+		System.out.println("whatObj= " + objLimitAvalableRequest.toString());
+
+		// execute for jaxb done
+		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+		Map<String, Object> prop = new HashMap<String, Object>();
+		prop.put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, true); //for debugging
+		prop.put(javax.xml.bind.Marshaller.JAXB_FRAGMENT, true); //for removing 1st line declaration
+ 		// both or none -- does not work -- prop.put("com.sun.xml.internal.bind.xmlHeaders", "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");  //now add customized header
+ 		 
+		marshaller.setMarshallerProperties(prop);
+		marshaller.setClassesToBeBound(Fmxrequestempty.class, RequestEmpty.class, LimitAvailableRequestParam.class);		
+		// works marshaller.marshal(objLimitAvalableRequest, new StreamResult(new FileWriter("limitAvailable.xml")));
+		//more flexible below
+		//now add the declaration
+		 StringWriter strWriterForXml = new StringWriter().append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+		 strWriterForXml.append("\n"); //for debugging only
+		//StreamResult xmlStringWriter = new StreamResult(new StringWriter()); 
+		 StreamResult xmlStringWriter = new StreamResult(strWriterForXml);
+		
+		marshaller.marshal(objLimitAvalableRequest, xmlStringWriter); 
+		String limitAvailableBuffer = xmlStringWriter.getWriter().toString();
+		System.out.println(limitAvailableBuffer);
+		FileWriter xmlFileWriter = new FileWriter("limitAvailable.xml"); xmlFileWriter.write(limitAvailableBuffer); xmlFileWriter.flush(); 
+		xmlFileWriter.close();
+	}
+
 	public static void prepareFundingMethodPullRequestString() throws XmlMappingException, IOException{
 		//prepare request[]
 		//1. field
@@ -78,7 +127,8 @@ public class ResponseRequestMainDriver {
 
 
 		//set gneral
-		String timestamp = new Timestamp(new Date().getTime()).toString();	
+		//String timestamp = new Timestamp(new Date().getTime()).toString();	
+		String timestamp = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(new Date());
 		objFundingMethodPullRequestModel.setGeneral(new General("09-30-2016 :07:10:47", new General.Auth("sdass", "qqq123")));	
 		objFundingMethodPullRequestModel.setRequest(requests);
 
@@ -93,6 +143,8 @@ public class ResponseRequestMainDriver {
 		marshaller.setClassesToBeBound(Fmxrequestempty.class, RequestEmpty.class, FundingMethodPullRequestParam.class);		
 		marshaller.marshal(objFundingMethodPullRequestModel, new StreamResult(new FileWriter("fundingMethodPullrequest.xml")));
 
+		
+		
 		
 	}
 	
