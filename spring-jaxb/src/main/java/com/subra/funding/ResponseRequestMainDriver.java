@@ -17,25 +17,30 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.http.ResponseEntity;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.XmlMappingException;
 
 
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.web.client.RestTemplate;
 
 import com.drfbets.funding.model.AddressPullRequestParam;
 import com.drfbets.funding.model.AddressPullResponseResult;
 import com.drfbets.funding.model.CustomerPullResponseResult;
 import com.drfbets.funding.model.FundingMethodPullRequestParam;
 import com.drfbets.funding.model.FundingMethodPullResponseResult;
+import com.drfbets.funding.model.GeneralOperationRequestParam;
 import com.drfbets.funding.model.LimitAvailableRequestParam;
 import com.subra.funding.model.CustomerPullRequestModel;
+import com.subra.funding.model.FmxrequestGen;
 import com.subra.funding.model.Fmxrequestempty;
 import com.subra.funding.model.Fmxrequestempty.General;
 import com.subra.funding.model.Fmxresponse;
 import com.subra.funding.model.ParamCustomerPullRequest;
 import com.subra.funding.model.RequestEmpty;
 import com.subra.funding.model.ParamCustomerPullRequest.Field;
+import com.subra.funding.model.RequestGen;
 import com.subra.funding.model.Response;
 
 public class ResponseRequestMainDriver {
@@ -48,11 +53,37 @@ public class ResponseRequestMainDriver {
 		//prepareAddressPullResponseString();
 		//prepareFundingMethodPullRequestString();
 		//prepareFundingMethodPullResponseString();
-		prepareLimitRequestParamString();
+		//prepareLimitRequestParamString(); // a good one
+		//prepGeneralOperationRequestParamString(); //must use this for compact design
+		checkRestcall();
 		  System.out.println("XML Created Sucessfully");		
 		
 	}
 	
+	public static void checkRestcall() {
+		RestTemplate restTemplate = new RestTemplate();
+		String responseType;
+		String url = "https://qa.xpressbetonline.com/fmxapi/fmx_api.aspx";
+		String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>xxxxx</username><password>yyyyyy</password></auth></general><request><category>customeretc</category><function>pull</function><param> <account>123456</account><field><name>account,firstname</name></field></param></request></fmxrequest>";
+
+		/* with correct username/password xpb response correctly  as below 
+		 ret=<200 OK,
+
+<?xml version="1.0" encoding="UTF-8"?>
+<fmxresponse><response><error><code>2</code><mesg>Error 1840: Element 'category': [facet 'enumeration'] The value 'customeretc' is not an element of the set {'customer', 'address', 'fundingmethod', 'transaction', 'limit', 'generaloperation'}. on line 1
+</mesg></error></response></fmxresponse>
+,{Date=[Thu, 06 Oct 2016 12:54:30 GMT], Server=[Apache], Vary=[Accept-Encoding], Content-Length=[335], Keep-Alive=[timeout=15], Connection=[Keep-Alive], Content-Type=[text/html; charset=ISO-8859-1], Set-Cookie=[NSC_WTr_ycp.rb.T=ffffffff0906003b45525d5f4f58455e445a4a423660;Version=1;path=/;secure;httponly]}>
+XML Created Sucessfully
+		 */
+		
+		ResponseEntity<String> ret = null;
+		
+		ret = restTemplate.postForEntity(url, data, String.class); //(url, responseType);
+		
+		System.out.println("ret=" + ret);
+		
+	}
+
 	public static void prepareLimitRequestParamString() throws XmlMappingException, IOException{
 		//use this of jaxb for flexible manipulation
 		
@@ -98,6 +129,58 @@ public class ResponseRequestMainDriver {
 		xmlFileWriter.close();
 	}
 
+	public static Jaxb2Marshaller marshaller;
+	static {
+		// execute for jaxb done
+		marshaller = new Jaxb2Marshaller();
+		Map<String, Object> prop = new HashMap<String, Object>();
+		prop.put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, true); //for debugging
+		prop.put(javax.xml.bind.Marshaller.JAXB_FRAGMENT, true); //for removing 1st line declaration
+ 		// both or none -- does not work -- prop.put("com.sun.xml.internal.bind.xmlHeaders", "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");  //now add customized header
+		marshaller.setMarshallerProperties(prop);
+		//bind all classes
+		marshaller.setClassesToBeBound(FmxrequestGen.class, RequestGen.class, Fmxresponse.class, Response.class, 
+				GeneralOperationRequestParam.class, 
+				LimitAvailableRequestParam.class,
+				AddressPullRequestParam.class,
+				FundingMethodPullRequestParam.class,
+				GeneralOperationRequestParam.class,
+				LimitAvailableRequestParam.class,
+				//CustomerPullRequestModel.class,
+				ParamCustomerPullRequest.class,
+				AddressPullResponseResult.class,
+				CustomerPullResponseResult.class,
+				FundingMethodPullResponseResult.class
+				
+				);
+
+	}
+	
+	public static void prepGeneralOperationRequestParamString() throws IOException {
+		
+	GeneralOperationRequestParam generalOperationReqParam =	new GeneralOperationRequestParam(new BigInteger("32561"), "type_current");
+	RequestGen<GeneralOperationRequestParam> request = new RequestGen<GeneralOperationRequestParam>("category_name", "function_name", generalOperationReqParam);
+	List<RequestGen<GeneralOperationRequestParam>> requests = 	new ArrayList<RequestGen<GeneralOperationRequestParam>>();
+	requests.add(request);
+	FmxrequestGen<GeneralOperationRequestParam> objGeneralOperationReqString = new FmxrequestGen<GeneralOperationRequestParam>(requests);
+	System.out.println("whatObj= " + objGeneralOperationReqString.toString());
+
+	// marshaller.setClassesToBeBound(FmxrequestGen.class, RequestGen.class, GeneralOperationRequestParam.class);
+
+	//more flexible below, now add the declaration
+	 StringWriter strWriterForXml = new StringWriter().append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+	 strWriterForXml.append("\n"); //for debugging only
+	 StreamResult xmlStringWriter = new StreamResult(strWriterForXml);
+	
+	marshaller.marshal(objGeneralOperationReqString, xmlStringWriter); 
+	String generaloperationStrBuffer = xmlStringWriter.getWriter().toString();
+	System.out.println(generaloperationStrBuffer);
+	FileWriter xmlFileWriter = new FileWriter("generalOperationReq.xml"); xmlFileWriter.write(generaloperationStrBuffer); xmlFileWriter.flush(); 
+	xmlFileWriter.close();
+
+	
+	}
+
 	public static void prepareFundingMethodPullRequestString() throws XmlMappingException, IOException{
 		//prepare request[]
 		//1. field
@@ -125,7 +208,6 @@ public class ResponseRequestMainDriver {
 		//5th and final fill frmrequest
 		Fmxrequestempty<FundingMethodPullRequestParam> objFundingMethodPullRequestModel = new Fmxrequestempty<FundingMethodPullRequestParam>();
 
-
 		//set gneral
 		//String timestamp = new Timestamp(new Date().getTime()).toString();	
 		String timestamp = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(new Date());
@@ -142,9 +224,6 @@ public class ResponseRequestMainDriver {
 		marshaller.setMarshallerProperties(prop);
 		marshaller.setClassesToBeBound(Fmxrequestempty.class, RequestEmpty.class, FundingMethodPullRequestParam.class);		
 		marshaller.marshal(objFundingMethodPullRequestModel, new StreamResult(new FileWriter("fundingMethodPullrequest.xml")));
-
-		
-		
 		
 	}
 	

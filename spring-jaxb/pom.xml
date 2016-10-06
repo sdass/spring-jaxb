@@ -35,6 +35,16 @@
 	</properties>
 	
 	<dependencies>
+
+
+
+ <!--        DRF Dependencies
+        <dependency>
+            <groupId>com.drf.drfbets</groupId>
+            <artifactId>xpressbet-wsdl</artifactId>
+            <version>${xpressbet-wsdl.version}</version>
+           </dependency> -->
+
 	
 	<!-- https://mvnrepository.com/artifact/org.springframework/spring-oxm -->
 	<dependency>
@@ -133,6 +143,6 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-
+        
 	</dependencies>	
 </project>
