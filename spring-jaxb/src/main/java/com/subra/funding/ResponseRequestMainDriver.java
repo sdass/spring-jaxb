@@ -54,7 +54,7 @@ public class ResponseRequestMainDriver {
 		//prepareFundingMethodPullRequestString();
 		//prepareFundingMethodPullResponseString();
 		//prepareLimitRequestParamString(); // a good one
-		//prepGeneralOperationRequestParamString(); //must use this for compact design
+		prepGeneralOperationRequestParamString(); //must use this for compact design
 		checkRestcall();
 		  System.out.println("XML Created Sucessfully");		
 		
