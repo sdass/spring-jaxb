@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "result")
 public class LimitAvailableResponseResult {
 
-	protected List<LimitAvailableResponseResult.Limit> limit;
+	protected List<Limit> limit;
 	
 	public LimitAvailableResponseResult() {	}
 	
@@ -31,7 +31,7 @@ public class LimitAvailableResponseResult {
 		return "LimitAvailableResponseResult [limit=" + limit + "]";
 	}
 	
-	public List<LimitAvailableResponseResult.Limit> getLimit() {
+	public List<Limit> getLimit() {
 	    if (limit == null) {
 	        limit = new ArrayList<LimitAvailableResponseResult.Limit>();
 	    }
@@ -105,19 +105,19 @@ public class LimitAvailableResponseResult {
 	        this.authorized = value;
 	    }
 	
-	    public LimitAvailableResponseResult.Limit.Remaining getRemaining() {
+	    public Remaining getRemaining() {
 	        return remaining;
 	    }
 	
-	    public void setRemaining(LimitAvailableResponseResult.Limit.Remaining value) {
+	    public void setRemaining(Remaining value) {
 	        this.remaining = value;
 	    }
 	
-	    public LimitAvailableResponseResult.Limit.Next getNext() {
+	    public Next getNext() {
 	        return next;
 	    }
 	
-	    public void setNext(LimitAvailableResponseResult.Limit.Next value) {
+	    public void setNext(Next value) {
 	        this.next = value;
 	    }
 	

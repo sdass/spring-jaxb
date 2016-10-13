@@ -36,6 +36,9 @@ import com.drfbets.funding.model.FundingMethodPullResponseResult;
 import com.drfbets.funding.model.GeneralOperationRequestParam;
 import com.drfbets.funding.model.LimitAvailableRequestParam;
 import com.drfbets.funding.model.LimitAvailableResponseResult;
+import com.drfbets.funding.model.LimitAvailableResponseResult.Limit;
+import com.drfbets.funding.model.LimitAvailableResponseResult.Limit.Next;
+import com.drfbets.funding.model.LimitAvailableResponseResult.Limit.Remaining;
 import com.subra.funding.model.CustomerPullRequestModel;
 import com.subra.funding.model.FmxrequestGen;
 import com.subra.funding.model.Fmxrequestempty;
@@ -371,17 +374,17 @@ XML Created Sucessfully
 	public static void prepareLimitResponseString() throws XmlMappingException, IOException{
 		//prepare two limits
 		//limit1
-		LimitAvailableResponseResult.Limit.Remaining remaining1 = new LimitAvailableResponseResult.Limit.Remaining(456.78, 345);
+		Remaining remaining1 = new Remaining(456.78, 345);
 		String date = "10-12-2016 :09:35:40";
-		LimitAvailableResponseResult.Limit.Next next1 = new LimitAvailableResponseResult.Limit.Next(date,99.56);
+		Next next1 = new Next(date,99.56);
 		String timeframe1 = "daily"; int fundingmethodid1 = 3456; String type1 = "ach"; short authorized1 = 1;
-		LimitAvailableResponseResult.Limit limit1 = new LimitAvailableResponseResult.Limit(fundingmethodid1, timeframe1, type1, authorized1, remaining1, next1);
+		Limit limit1 = new Limit(fundingmethodid1, timeframe1, type1, authorized1, remaining1, next1);
 		//limit2
 		String timeframe2 = "none"; int fundingmethodid2 = 33337; String type2 = "cc"; short authorized2 = 0;
-		LimitAvailableResponseResult.Limit.Remaining remaining2 = new LimitAvailableResponseResult.Limit.Remaining(777.78, 177);
-		LimitAvailableResponseResult.Limit.Next next2 =null;
-		LimitAvailableResponseResult.Limit limit2 = new LimitAvailableResponseResult.Limit(fundingmethodid2, timeframe2, type2, authorized2, remaining2, next2);
-		List<LimitAvailableResponseResult.Limit> limitList = new ArrayList<LimitAvailableResponseResult.Limit>();
+		Remaining remaining2 = new Remaining(777.78, 177);
+		Next next2 =null;
+		Limit limit2 = new Limit(fundingmethodid2, timeframe2, type2, authorized2, remaining2, next2);
+		List<Limit> limitList = new ArrayList<Limit>();
 		limitList.add(limit1); limitList.add(limit2);
 		//prepare error, response and Fmxresponse obj
 		LimitAvailableResponseResult limitAvailableResponseResult = new LimitAvailableResponseResult(limitList);
