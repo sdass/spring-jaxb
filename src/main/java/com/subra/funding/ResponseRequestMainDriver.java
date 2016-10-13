@@ -4,6 +4,7 @@ package com.subra.funding;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,8 @@ import java.util.Map;
 
 import javax.xml.transform.stream.StreamResult;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +35,7 @@ import com.drfbets.funding.model.FundingMethodPullRequestParam;
 import com.drfbets.funding.model.FundingMethodPullResponseResult;
 import com.drfbets.funding.model.GeneralOperationRequestParam;
 import com.drfbets.funding.model.LimitAvailableRequestParam;
+import com.drfbets.funding.model.LimitAvailableResponseResult;
 import com.subra.funding.model.CustomerPullRequestModel;
 import com.subra.funding.model.FmxrequestGen;
 import com.subra.funding.model.Fmxrequestempty;
@@ -45,17 +49,23 @@ import com.subra.funding.model.Response;
 
 public class ResponseRequestMainDriver {
 
+	static Logger log = LoggerFactory.getLogger(ResponseRequestMainDriver.class);
 	public static void main(String [] args) throws XmlMappingException, IOException{
 		
 		//preapareAddressPullString();
+		//prepareAddressPullResponseString();
+		
 		//prepareCustomerPullResponseString();
 		//prepareCustomerPullRequestString();
-		//prepareAddressPullResponseString();
+
 		//prepareFundingMethodPullRequestString();
 		//prepareFundingMethodPullResponseString();
+		
 		//prepareLimitRequestParamString(); // a good one
-		prepGeneralOperationRequestParamString(); //must use this for compact design
-		checkRestcall();
+		prepareLimitResponseString();
+		
+		//prepGeneralOperationRequestParamString(); //must use this for compact design
+		//checkRestcall();
 		  System.out.println("XML Created Sucessfully");		
 		
 	}
@@ -64,7 +74,10 @@ public class ResponseRequestMainDriver {
 		RestTemplate restTemplate = new RestTemplate();
 		String responseType;
 		String url = "https://qa.xpressbetonline.com/fmxapi/fmx_api.aspx";
-		String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>xxxxx</username><password>yyyyyy</password></auth></general><request><category>customeretc</category><function>pull</function><param> <account>123456</account><field><name>account,firstname</name></field></param></request></fmxrequest>";
+		//String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>xxxxx</username><password>yyyyyy</password></auth></general><request><category>customeretc</category><function>pull</function><param> <account>123456</account><field><name>account,firstname</name></field></param></request></fmxrequest>";
+		//String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>xxxx</username><password>xxxx</password></auth></general><request><category>customer</category><function>pull</function><param> <account>123456</account><field><name>account,firstname</name></field></param></request></fmxrequest>"; //This account is currently not open, it must be open to perform any transactions</mesg>
+		//String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>xxxx</username><password>xxxx</password></auth></general><request><category>customer</category><function>pull</function><param> <account>123456</account><field><name>account,firstname</name></field></param></request></fmxrequest>";// Invalid username</mesg></erro 
+		String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>first@xxxx</username><password>xxxx</password></auth></general><request><category>customer</category><function>pull</function><param> <account>123456</account><field><name>account,firstname</name></field></param></request></fmxrequest>";// Invalid username</mesg></erro <-- same as above
 
 		/* with correct username/password xpb response correctly  as below 
 		 ret=<200 OK,
@@ -83,7 +96,8 @@ XML Created Sucessfully
 		System.out.println("ret=" + ret);
 		
 	}
-
+	
+	
 	public static void prepareLimitRequestParamString() throws XmlMappingException, IOException{
 		//use this of jaxb for flexible manipulation
 		
@@ -150,7 +164,8 @@ XML Created Sucessfully
 				ParamCustomerPullRequest.class,
 				AddressPullResponseResult.class,
 				CustomerPullResponseResult.class,
-				FundingMethodPullResponseResult.class
+				FundingMethodPullResponseResult.class,
+				LimitAvailableResponseResult.class
 				
 				);
 
@@ -351,6 +366,52 @@ XML Created Sucessfully
 		marshaller.setClassesToBeBound(Fmxresponse.class, Response.class, 
 				FundingMethodPullResponseResult.class);		
 		marshaller.marshal(objfmxresponse, new StreamResult(new FileWriter("fundingMethodPullResponstring.xml")));
+		
+	}
+	public static void prepareLimitResponseString() throws XmlMappingException, IOException{
+		//prepare two limits
+		//limit1
+		LimitAvailableResponseResult.Limit.Remaining remaining1 = new LimitAvailableResponseResult.Limit.Remaining(new BigDecimal("456.78"), new BigInteger("345"));
+		String date = "10-12-2016 :09:35:40";
+		LimitAvailableResponseResult.Limit.Next next1 = new LimitAvailableResponseResult.Limit.Next(date, new BigDecimal("99.56"));
+		String timeframe1 = "daily"; BigInteger fundingmethodid1 = new BigInteger("3456"); String type1 = "ach"; BigInteger authorized1 = new BigInteger("1");
+		LimitAvailableResponseResult.Limit limit1 = new LimitAvailableResponseResult.Limit(fundingmethodid1, timeframe1, type1, authorized1, remaining1, next1);
+		//limit2
+		String timeframe2 = "none"; BigInteger fundingmethodid2 = new BigInteger("33337"); String type2 = "cc"; BigInteger authorized2 = new BigInteger("0");
+		LimitAvailableResponseResult.Limit.Remaining remaining2 = new LimitAvailableResponseResult.Limit.Remaining(new BigDecimal("777.78"), new BigInteger("177"));
+		LimitAvailableResponseResult.Limit.Next next2 =null;
+		LimitAvailableResponseResult.Limit limit2 = new LimitAvailableResponseResult.Limit(fundingmethodid2, timeframe2, type2, authorized2, remaining2, next2);
+		List<LimitAvailableResponseResult.Limit> limitList = new ArrayList<LimitAvailableResponseResult.Limit>();
+		limitList.add(limit1); limitList.add(limit2);
+		//prepare error, response and Fmxresponse obj
+		LimitAvailableResponseResult limitAvailableResponseResult = new LimitAvailableResponseResult(limitList);
+		Response.Error error = new Response.Error(BigInteger.valueOf(0), "");
+		Response<LimitAvailableResponseResult> response1 = new Response<LimitAvailableResponseResult>(error, "my_category","my_function", limitAvailableResponseResult);
+		List<Response<LimitAvailableResponseResult>> responseList = new ArrayList<Response<LimitAvailableResponseResult>>();
+		responseList.add(response1);
+		Fmxresponse<LimitAvailableResponseResult> objfmxresponse = new Fmxresponse<LimitAvailableResponseResult>(responseList);
+		System.out.println("whatObj=" + objfmxresponse.toString());
+		
+		/*// execute for jaxb 
+		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+		Map<String, Object> prop = new HashMap<String, Object>();
+		prop.put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, true); //for debugging
+		marshaller.setMarshallerProperties(prop);
+		marshaller.setClassesToBeBound(Fmxresponse.class, Response.class, 
+				LimitAvailableResponseResult.class);		
+		marshaller.marshal(objfmxresponse, new StreamResult(new FileWriter("limitAvailableResponsestring.xml")));
+		*/
+		
+		//more flexible
+		StringWriter strWriterForXml = new StringWriter().append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+		strWriterForXml.append("\n"); //for debugging only
+		StreamResult xmlStringWriter = new StreamResult(strWriterForXml);
+		marshaller.marshal(objfmxresponse, xmlStringWriter); //statically created
+		String limitAvaliableStrBuffer = xmlStringWriter.getWriter().toString();
+		log.info("limitAvaliableStrBuffer=" + limitAvaliableStrBuffer);
+		FileWriter xmlFileWriter = new FileWriter("limitAvailableResponsestring.xml");
+		xmlFileWriter.write(limitAvaliableStrBuffer); xmlFileWriter.flush();
+		 
 		
 	}
 	
