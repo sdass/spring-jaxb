@@ -3,8 +3,6 @@
 
 package com.drfbets.funding.model;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,20 +42,20 @@ public class LimitAvailableResponseResult {
 	@XmlType(name = "", propOrder = { "fundingmethodid",  "timeframe",  "type", "authorized", "remaining", "next" })
 	public static class Limit {
 	
-	    protected BigInteger fundingmethodid;
+	    protected Integer fundingmethodid;
 	    @XmlElement(required = true)
 	    protected String timeframe;
 	    @XmlElement(required = true)
 	    protected String type;
 	    @XmlElement(required = true)
-	    protected BigInteger authorized;
+	    protected Short authorized;
 	    @XmlElement(required = true)
 	    protected LimitAvailableResponseResult.Limit.Remaining remaining;
 	    protected LimitAvailableResponseResult.Limit.Next next;
 
 	    public Limit(){}
 	    
-	    public Limit(BigInteger fundingmethodid, String timeframe, String type, BigInteger authorized, Remaining remaining, Next next) {
+	    public Limit(Integer fundingmethodid, String timeframe, String type, Short authorized, Remaining remaining, Next next) {
 			super();
 			this.fundingmethodid = fundingmethodid;
 			this.timeframe = timeframe;
@@ -75,11 +73,11 @@ public class LimitAvailableResponseResult {
 					+ next + "]";
 		}
 
-		public BigInteger getFundingmethodid() {
+		public Integer getFundingmethodid() {
 	        return fundingmethodid;
 	    }
 	
-	    public void setFundingmethodid(BigInteger value) {
+	    public void setFundingmethodid(Integer value) {
 	        this.fundingmethodid = value;
 	    }
 	
@@ -99,11 +97,11 @@ public class LimitAvailableResponseResult {
 	        this.type = value;
 	    }
 	
-	    public BigInteger getAuthorized() {
+	    public Short getAuthorized() {
 	        return authorized;
 	    }
 	
-	    public void setAuthorized(BigInteger value) {
+	    public void setAuthorized(Short value) {
 	        this.authorized = value;
 	    }
 	
@@ -130,11 +128,11 @@ public class LimitAvailableResponseResult {
 	        @XmlElement(required = true)
 	        protected String date;
 	        @XmlElement(required = true)
-	        protected BigDecimal amount;
+	        protected Double amount;
 	        
 	        public Next(){}
 	
-	        public Next(String date, BigDecimal amount) {
+	        public Next(String date, Double amount) {
 				super();
 				this.date = date;
 				this.amount = amount;
@@ -153,11 +151,11 @@ public class LimitAvailableResponseResult {
 	            this.date = value;
 	        }
 	
-	        public BigDecimal getAmount() {
+	        public Double getAmount() {
 	            return amount;
 	        }
 	
-	        public void setAmount(BigDecimal value) {
+	        public void setAmount(Double value) {
 	            this.amount = value;
 	        }
 	
@@ -168,13 +166,13 @@ public class LimitAvailableResponseResult {
 	    public static class Remaining {
 	
 	        @XmlElement(required = true)
-	        protected BigDecimal amount;
+	        protected Double amount;
 	        @XmlElement(required = true)
-	        protected BigInteger number;
+	        protected Integer number;
 
 	        public Remaining(){}
 	        
-	        public Remaining(BigDecimal amount, BigInteger number) {
+	        public Remaining(Double amount, Integer number) {
 				super();
 				this.amount = amount;
 				this.number = number;
@@ -186,19 +184,19 @@ public class LimitAvailableResponseResult {
 						+ "]";
 			}
 
-			public BigDecimal getAmount() {
+			public Double getAmount() {
 	            return amount;
 	        }
 	
-	        public void setAmount(BigDecimal value) {
+	        public void setAmount(Double value) {
 	            this.amount = value;
 	        }
 	
-	        public BigInteger getNumber() {
+	        public Integer getNumber() {
 	            return number;
 	        }
 	
-	        public void setNumber(BigInteger value) {
+	        public void setNumber(Integer value) {
 	            this.number = value;
 	        }
 	

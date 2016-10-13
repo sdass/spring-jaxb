@@ -371,14 +371,14 @@ XML Created Sucessfully
 	public static void prepareLimitResponseString() throws XmlMappingException, IOException{
 		//prepare two limits
 		//limit1
-		LimitAvailableResponseResult.Limit.Remaining remaining1 = new LimitAvailableResponseResult.Limit.Remaining(new BigDecimal("456.78"), new BigInteger("345"));
+		LimitAvailableResponseResult.Limit.Remaining remaining1 = new LimitAvailableResponseResult.Limit.Remaining(456.78, 345);
 		String date = "10-12-2016 :09:35:40";
-		LimitAvailableResponseResult.Limit.Next next1 = new LimitAvailableResponseResult.Limit.Next(date, new BigDecimal("99.56"));
-		String timeframe1 = "daily"; BigInteger fundingmethodid1 = new BigInteger("3456"); String type1 = "ach"; BigInteger authorized1 = new BigInteger("1");
+		LimitAvailableResponseResult.Limit.Next next1 = new LimitAvailableResponseResult.Limit.Next(date,99.56);
+		String timeframe1 = "daily"; int fundingmethodid1 = 3456; String type1 = "ach"; short authorized1 = 1;
 		LimitAvailableResponseResult.Limit limit1 = new LimitAvailableResponseResult.Limit(fundingmethodid1, timeframe1, type1, authorized1, remaining1, next1);
 		//limit2
-		String timeframe2 = "none"; BigInteger fundingmethodid2 = new BigInteger("33337"); String type2 = "cc"; BigInteger authorized2 = new BigInteger("0");
-		LimitAvailableResponseResult.Limit.Remaining remaining2 = new LimitAvailableResponseResult.Limit.Remaining(new BigDecimal("777.78"), new BigInteger("177"));
+		String timeframe2 = "none"; int fundingmethodid2 = 33337; String type2 = "cc"; short authorized2 = 0;
+		LimitAvailableResponseResult.Limit.Remaining remaining2 = new LimitAvailableResponseResult.Limit.Remaining(777.78, 177);
 		LimitAvailableResponseResult.Limit.Next next2 =null;
 		LimitAvailableResponseResult.Limit limit2 = new LimitAvailableResponseResult.Limit(fundingmethodid2, timeframe2, type2, authorized2, remaining2, next2);
 		List<LimitAvailableResponseResult.Limit> limitList = new ArrayList<LimitAvailableResponseResult.Limit>();
