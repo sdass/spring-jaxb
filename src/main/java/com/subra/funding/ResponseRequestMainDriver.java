@@ -3,6 +3,7 @@ package com.subra.funding;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringBufferInputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -15,11 +16,17 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.XmlMappingException;
@@ -65,38 +72,104 @@ public class ResponseRequestMainDriver {
 		//prepareFundingMethodPullResponseString();
 		
 		//prepareLimitRequestParamString(); // a good one
-		prepareLimitResponseString();
+		//prepareLimitResponseString();
 		
 		//prepGeneralOperationRequestParamString(); //must use this for compact design
-		//checkRestcall();
+		checkRestcall();
 		  System.out.println("XML Created Sucessfully");		
 		
 	}
 	
 	public static void checkRestcall() {
 		RestTemplate restTemplate = new RestTemplate();
+		//1591999
 		String responseType;
 		String url = "https://qa.xpressbetonline.com/fmxapi/fmx_api.aspx";
-		//String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>xxxxx</username><password>yyyyyy</password></auth></general><request><category>customeretc</category><function>pull</function><param> <account>123456</account><field><name>account,firstname</name></field></param></request></fmxrequest>";
-		//String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>xxxx</username><password>xxxx</password></auth></general><request><category>customer</category><function>pull</function><param> <account>123456</account><field><name>account,firstname</name></field></param></request></fmxrequest>"; //This account is currently not open, it must be open to perform any transactions</mesg>
-		//String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>xxxx</username><password>xxxx</password></auth></general><request><category>customer</category><function>pull</function><param> <account>123456</account><field><name>account,firstname</name></field></param></request></fmxrequest>";// Invalid username</mesg></erro 
-		String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>first@xxxx</username><password>xxxx</password></auth></general><request><category>customer</category><function>pull</function><param> <account>123456</account><field><name>account,firstname</name></field></param></request></fmxrequest>";// Invalid username</mesg></erro <-- same as above
-
-		/* with correct username/password xpb response correctly  as below 
-		 ret=<200 OK,
-
-<?xml version="1.0" encoding="UTF-8"?>
-<fmxresponse><response><error><code>2</code><mesg>Error 1840: Element 'category': [facet 'enumeration'] The value 'customeretc' is not an element of the set {'customer', 'address', 'fundingmethod', 'transaction', 'limit', 'generaloperation'}. on line 1
-</mesg></error></response></fmxresponse>
-,{Date=[Thu, 06 Oct 2016 12:54:30 GMT], Server=[Apache], Vary=[Accept-Encoding], Content-Length=[335], Keep-Alive=[timeout=15], Connection=[Keep-Alive], Content-Type=[text/html; charset=ISO-8859-1], Set-Cookie=[NSC_WTr_ycp.rb.T=ffffffff0906003b45525d5f4f58455e445a4a423660;Version=1;path=/;secure;httponly]}>
-XML Created Sucessfully
-		 */
+		//String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>xxxxxx</username><password>xxxxxx</password></auth></general><request><category>customer</category><function>pull</function><param> <account>1591999</account><field><name>account,firstname</name></field></param></request></fmxrequest>";
+			
+		/* works-->	*/ String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-06 04:48:14</timestamp> <auth><username>xxxxxx</username><password>xxxxxx</password></auth></general><request><category>customer</category><function>pull</function><param> <account>1486588</account><field><name>account,firstname</name></field></param></request></fmxrequest>";
 		
+		/* This code perfectly works as String 
+		 
 		ResponseEntity<String> ret = null;
-		
+	
 		ret = restTemplate.postForEntity(url, data, String.class); //(url, responseType);
-		
 		System.out.println("ret=" + ret);
+		
+		HttpHeaders  h = ret.getHeaders();
+		HttpStatus code = ret.getStatusCode();
+		String body = ret.getBody(); 
+		System.out.println("------------------------------\nheader=" + h );
+		System.out.println("statusCode=" + code);
+		System.out.println( "body=" + body);
+	   */
+		
+	/*response back ret=<200 OK, <?xml version="1.0" encoding="UTF-8"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>customer</category><function>pull</function><result><field><name>fedexcharge</name><value>17.00</value></field><field><name>vscharge</name><value>5.00</value></field><field><name>mccharge</name><value>5.00</value></field><field><name>account</name><value>1486588</value></field><field><name>firstname</name><value>fifthTester</value></field></result></response></fmxresponse>,{Date=[Fri, 14 Oct 2016 16:44:52 GMT], Server=[Apache], Vary=[Accept-Encoding], Content-Length=[491], Keep-Alive=[timeout=15], Connection=[Keep-Alive], Content-Type=[text/html; charset=ISO-8859-1], Set-Cookie=[NSC_WTr_ycp.rb.T=ffffffff0906003b45525d5f4f58455e445a4a423660;Version=1;path=/;secure;httponly]}> */
+		
+		ResponseEntity<Fmxresponse<CustomerPullResponseResult>> ret = null;
+		
+		Fmxresponse<CustomerPullResponseResult> arb = new Fmxresponse<CustomerPullResponseResult>();
+		Class myclass = arb.getClass();
+
+		
+		
+		
+		//exception	ret = restTemplate.postForEntity(url, data, myclass); //(url, responseType);
+		// errorr ret = restTemplate.postForEntity(url, data, new Fmxresponse<CustomerPullResponseResult>);  // new Fmxresponse<CustomerPullResponseResult>()
+		
+		HttpEntity<String> httpEntity = new HttpEntity<String>(data);
+		
+		//ret = restTemplate.exchange(url, HttpMethod.POST, 
+		
+	// exception 	ret = restTemplate.exchange(url, HttpMethod.POST, httpEntity, new ParameterizedTypeReference <Fmxresponse<CustomerPullResponseResult>>() {});
+		ResponseEntity<String> ret2 = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+
+		
+		//System.out.println("2. parameterized ret=" + ret2);
+		
+		
+		if(ret2.getStatusCode() == HttpStatus.OK){
+			String body = ret2.getBody();
+			body = body.trim(); //is needed to work
+			System.out.println("3. body=" + body);
+			StringBufferInputStream stringBufferInputStream = new StringBufferInputStream(body);
+			StreamSource streamSource = new StreamSource(stringBufferInputStream);
+			// problem with static jaxb Fmxresponse<CustomerPullResponseResult> objCustomerPull = (Fmxresponse<CustomerPullResponseResult> )	marshaller.unmarshal(streamSource);
+			//individualized jaxb below
+
+			Jaxb2Marshaller marshaller2 = new Jaxb2Marshaller();
+			marshaller2.setClassesToBeBound( Fmxresponse.class, Response.class, CustomerPullResponseResult.class);
+			Fmxresponse<CustomerPullResponseResult> objCustomerPull = (Fmxresponse<CustomerPullResponseResult> )	marshaller2.unmarshal(streamSource);
+			log.info("objCustomerPull=" + objCustomerPull);
+			/* mapped nicely as below
+
+3. body=<?xml version="1.0" encoding="UTF-8"?>
+<fmxresponse><response><error><code>0</code><mesg></mesg></error>
+	<category>customer</category><function>pull</function>
+
+<result><field><name>fedexcharge</name><value>17.00</value></field>
+	<field><name>vscharge</name><value>5.00</value></field><field><name>mccharge</name><value>5.00</value></field>
+<field><name>account</name><value>1486588</value></field><field><name>firstname</name><value>fifthTester</value></field></result></response></fmxresponse>
+
+
+INFO  ResponseRequestMainDriver - 
+objCustomerPull=Fmxresponse [response=[Response [error=Error [code=0, mesg=], 
+	category=customer, function=pull, 
+
+result=Result [field=[Field [name=fedexcharge, value=17.00], 
+	Field [name=vscharge, value=5.00], Field [name=mccharge, value=5.00], 
+	Field [name=account, value=23232], Field [name=firstname, value=dfdsf]]]]]]
+XML Created Sucessfully
+			 
+			 */
+		}else {
+			
+			System.out.println("Error occurs. . .");
+		}
+		
+		//ret = restTemplate.postForEntity(url, data, new Fmxresponse<CustomerPullResponseResult>().class); //(url, responseType);
+		//ret = restTemplate.postForEntity(url, data, arb.getClass()); //(url, responseType);
+		
 		
 	}
 	
