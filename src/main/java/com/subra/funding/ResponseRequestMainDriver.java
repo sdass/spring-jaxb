@@ -41,6 +41,8 @@ import com.drfbets.funding.model.CustomerPullResponseResult;
 import com.drfbets.funding.model.FundingMethodPullRequestParam;
 import com.drfbets.funding.model.FundingMethodPullResponseResult;
 import com.drfbets.funding.model.GeneralOperationRequestParam;
+import com.drfbets.funding.model.GeneralOperationResponseResult;
+import com.drfbets.funding.model.GeneralOperationResponseResult.Balance;
 import com.drfbets.funding.model.LimitAvailableRequestParam;
 import com.drfbets.funding.model.LimitAvailableResponseResult;
 import com.drfbets.funding.model.LimitAvailableResponseResult.Limit;
@@ -56,6 +58,7 @@ import com.subra.funding.model.RequestEmpty;
 import com.subra.funding.model.ParamCustomerPullRequest.Field;
 import com.subra.funding.model.RequestGen;
 import com.subra.funding.model.Response;
+import com.subra.funding.model.Response.Error;
 
 public class ResponseRequestMainDriver {
 
@@ -75,11 +78,14 @@ public class ResponseRequestMainDriver {
 		//prepareLimitResponseString();
 		
 		//prepGeneralOperationRequestParamString(); //must use this for compact design
-		checkRestcall();
+		prepareGeneralOperationResponseString();
+	//	checkRestcall();
+		
 		  System.out.println("XML Created Sucessfully");		
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void checkRestcall() {
 		RestTemplate restTemplate = new RestTemplate();
 		//1591999
@@ -110,8 +116,6 @@ public class ResponseRequestMainDriver {
 		
 		Fmxresponse<CustomerPullResponseResult> arb = new Fmxresponse<CustomerPullResponseResult>();
 		Class myclass = arb.getClass();
-
-		
 		
 		
 		//exception	ret = restTemplate.postForEntity(url, data, myclass); //(url, responseType);
@@ -241,7 +245,8 @@ XML Created Sucessfully
 				AddressPullResponseResult.class,
 				CustomerPullResponseResult.class,
 				FundingMethodPullResponseResult.class,
-				LimitAvailableResponseResult.class
+				LimitAvailableResponseResult.class,
+				GeneralOperationResponseResult.class
 				
 				);
 
@@ -386,7 +391,7 @@ XML Created Sucessfully
 		AddressPullResponseResult addressPullResponseResult = new AddressPullResponseResult(addresses);
 		//3. prepare response [1st populate error]
 		//Response.Error error = new Response.Error(BigInteger.valueOf(3), "errorMsg");		
-		Response.Error error = new Response.Error(BigInteger.valueOf(0), "");
+		Response.Error error = new Response.Error(0, "");
 		
 		Response<AddressPullResponseResult> response = new  Response<AddressPullResponseResult>(error, "categoryName", "functionName", addressPullResponseResult);
 		
@@ -426,7 +431,7 @@ XML Created Sucessfully
 		FundingMethodPullResponseResult result = new FundingMethodPullResponseResult(fundingMehtodList);
 		//4. prepare response
 		//Response.Error error = new Response.Error(BigInteger.valueOf(0), "");
-		Response.Error error = new Response.Error(BigInteger.valueOf(5), "Invalid");
+		Response.Error error = new Response.Error(5, "Invalid");
 		Response<FundingMethodPullResponseResult> response1 = new  Response<FundingMethodPullResponseResult>(error, "myCategory", "Myfunction", result);
 		//5. last step: prepae formresponse
 		List<Response<FundingMethodPullResponseResult>> responseList = new ArrayList<Response<FundingMethodPullResponseResult>>();
@@ -444,6 +449,35 @@ XML Created Sucessfully
 		marshaller.marshal(objfmxresponse, new StreamResult(new FileWriter("fundingMethodPullResponstring.xml")));
 		
 	}
+	
+	public static void prepareGeneralOperationResponseString() throws IOException{
+	 //prepre result
+	 Balance balance1 = new Balance("current", 1314.20);
+	 Balance balance2 = new Balance("availble", 900.00);
+	 List<Balance> balanceList = new ArrayList<Balance>();
+	 balanceList.add(balance1);
+	balanceList.add(balance2); //commented out for test case1.
+	 GeneralOperationResponseResult generalOperationResponseResult = new GeneralOperationResponseResult(balanceList);
+	//prepare error, response and Fmxresponse obj
+	 Response.Error error = new Response.Error(0,"");
+	 Response<GeneralOperationResponseResult> response1 = new Response<GeneralOperationResponseResult>(error, "my_category", "my_function", generalOperationResponseResult);
+	 List<Response<GeneralOperationResponseResult>> responseList = new ArrayList<Response<GeneralOperationResponseResult>>();
+	 responseList.add(response1);
+	 Fmxresponse<GeneralOperationResponseResult> objfmxresponse = new Fmxresponse<GeneralOperationResponseResult>(responseList);
+	 System.out.println("whatObj=" + objfmxresponse.toString());
+	 
+	StringWriter strWriterForXml = new StringWriter().append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+	strWriterForXml.append("\n"); //for debugging only
+	StreamResult xmlStringWriter = new StreamResult(strWriterForXml);
+	marshaller.marshal(objfmxresponse, xmlStringWriter); //statically created
+	String generalOperationStrBuffer = xmlStringWriter.getWriter().toString();
+	log.info("generalOperationStrBuffer=" + generalOperationStrBuffer);
+	FileWriter xmlFileWriter = new FileWriter("generalOperationResponsestring.xml");
+	xmlFileWriter.write(generalOperationStrBuffer); xmlFileWriter.flush();
+
+	 
+	}
+	
 	public static void prepareLimitResponseString() throws XmlMappingException, IOException{
 		//prepare two limits
 		//limit1
@@ -461,7 +495,7 @@ XML Created Sucessfully
 		limitList.add(limit1); limitList.add(limit2);
 		//prepare error, response and Fmxresponse obj
 		LimitAvailableResponseResult limitAvailableResponseResult = new LimitAvailableResponseResult(limitList);
-		Response.Error error = new Response.Error(BigInteger.valueOf(0), "");
+		Response.Error error = new Response.Error(0, "");
 		Response<LimitAvailableResponseResult> response1 = new Response<LimitAvailableResponseResult>(error, "my_category","my_function", limitAvailableResponseResult);
 		List<Response<LimitAvailableResponseResult>> responseList = new ArrayList<Response<LimitAvailableResponseResult>>();
 		responseList.add(response1);
@@ -502,7 +536,7 @@ XML Created Sucessfully
 		CustomerPullResponseResult customerPullResponseResult = new CustomerPullResponseResult(fieldList);
 		//3. prepare response [1st populate error]
 		//Response.Error error = new Response.Error(BigInteger.valueOf(3), "errorMsg");		
-		Response.Error error = new Response.Error(BigInteger.valueOf(0), "");
+		Response.Error error = new Response.Error(0, "");
 		
 		Response<CustomerPullResponseResult> response = new  Response<CustomerPullResponseResult>(error, "categoryName", "functionName", customerPullResponseResult);
 		

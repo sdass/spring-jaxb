@@ -1,6 +1,5 @@
 package com.subra.funding.model;
 
-import java.math.BigInteger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -73,23 +72,23 @@ public class Response<T> {
         public static class Error {
 
             @XmlElement(required = true)
-            protected BigInteger code;
+            protected Integer code;
             @XmlElement(required = true)
             protected String mesg;
 
             public Error(){}
             
-            public Error(BigInteger code, String mesg) {
+            public Error(Integer code, String mesg) {
 				super();
 				this.code = code;
 				this.mesg = mesg;
 			}
 
-			public BigInteger getCode() {
+			public Integer getCode() {
                 return code;
             }
 
-            public void setCode(BigInteger value) {
+            public void setCode(Integer value) {
                 this.code = value;
             }
 
