@@ -48,6 +48,10 @@ import com.drfbets.funding.model.LimitAvailableResponseResult;
 import com.drfbets.funding.model.LimitAvailableResponseResult.Limit;
 import com.drfbets.funding.model.LimitAvailableResponseResult.Limit.Next;
 import com.drfbets.funding.model.LimitAvailableResponseResult.Limit.Remaining;
+import com.drfbets.funding.model.TransactionSendRequestParam;
+import com.drfbets.funding.model.TransactionSendRequestParam.Amount;
+import com.drfbets.funding.model.TransactionSendRequestParam.Amount.Fee;
+import com.drfbets.funding.model.TransactionSendRequestParam.Details;
 import com.subra.funding.model.CustomerPullRequestModel;
 import com.subra.funding.model.FmxrequestGen;
 import com.subra.funding.model.Fmxrequestempty;
@@ -78,7 +82,8 @@ public class ResponseRequestMainDriver {
 		//prepareLimitResponseString();
 		
 		//prepGeneralOperationRequestParamString(); //must use this for compact design
-		prepareGeneralOperationResponseString();
+		//prepareGeneralOperationResponseString();
+		prepareTransactionRequestParamString();
 	//	checkRestcall();
 		
 		  System.out.println("XML Created Sucessfully");		
@@ -174,6 +179,48 @@ XML Created Sucessfully
 		//ret = restTemplate.postForEntity(url, data, new Fmxresponse<CustomerPullResponseResult>().class); //(url, responseType);
 		//ret = restTemplate.postForEntity(url, data, arb.getClass()); //(url, responseType);
 		
+	}
+	
+	public static void prepareTransactionRequestParamString() throws IOException{
+		BigInteger account = new BigInteger("56855"); 
+		String type = "type_deposit"; 
+		String id= "id_ach";
+		String subid= null; //"subid_none";
+		Integer fundingmethodid = null; //6545; // can be missing
+		//prepare Details
+		List<TransactionSendRequestParam.Details.Field> fields = new ArrayList<TransactionSendRequestParam.Details.Field>();
+		TransactionSendRequestParam.Details.Field field1 = new TransactionSendRequestParam.Details.Field("name_abanumber", "1129000");
+		TransactionSendRequestParam.Details.Field field2 = new TransactionSendRequestParam.Details.Field("name_accountnumber", "6789000");
+		TransactionSendRequestParam.Details.Field field3 = new TransactionSendRequestParam.Details.Field("name_checknumber", "1234");
+		fields.add(field1); fields.add(field2);  fields.add(field3);
+		Details details = new Details(fields);
+		//prepare Amount
+		List<Fee> fees = new ArrayList<Fee>();
+		Fee fee1 = new Fee("type_feedex", 5.25);
+		fees.add(fee1);
+		fees = null; //1st test case
+		Amount amount = new Amount(10.00, fees);
+		//now create param
+		TransactionSendRequestParam transactionSendRequestParam = new TransactionSendRequestParam(account, type, id, subid, fundingmethodid, details, amount);
+		RequestGen<TransactionSendRequestParam> request = new RequestGen<TransactionSendRequestParam>("my_category", "my_function", transactionSendRequestParam);
+		List<RequestGen<TransactionSendRequestParam>> requests = new ArrayList<RequestGen<TransactionSendRequestParam>>();
+		requests.add(request);
+		FmxrequestGen<TransactionSendRequestParam> objTransactionSendRequest = new FmxrequestGen<TransactionSendRequestParam>(requests);
+		System.out.println("whatobj=" + objTransactionSendRequest);
+		
+		
+		
+		//more flexible
+		StringWriter strWriterForXml = new StringWriter().append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+		strWriterForXml.append("\n"); //for debugging only
+		StreamResult xmlStringWriter = new StreamResult(strWriterForXml);
+		marshaller.marshal(objTransactionSendRequest, xmlStringWriter); //statically created
+		String transactionRequestStrBuffer = xmlStringWriter.getWriter().toString();
+		log.info("limitAvaliableStrBuffer=" + transactionRequestStrBuffer);
+		FileWriter xmlFileWriter = new FileWriter("limitAvailableResponsestring.xml");
+		xmlFileWriter.write(transactionRequestStrBuffer); xmlFileWriter.flush();
+		 
+		
 		
 	}
 	
@@ -246,7 +293,8 @@ XML Created Sucessfully
 				CustomerPullResponseResult.class,
 				FundingMethodPullResponseResult.class,
 				LimitAvailableResponseResult.class,
-				GeneralOperationResponseResult.class
+				GeneralOperationResponseResult.class,
+				TransactionSendRequestParam.class
 				
 				);
 
@@ -456,7 +504,7 @@ XML Created Sucessfully
 	 Balance balance2 = new Balance("availble", 900.00);
 	 List<Balance> balanceList = new ArrayList<Balance>();
 	 balanceList.add(balance1);
-	balanceList.add(balance2); //commented out for test case1.
+	 balanceList.add(balance2); //commented out for test case1.
 	 GeneralOperationResponseResult generalOperationResponseResult = new GeneralOperationResponseResult(balanceList);
 	//prepare error, response and Fmxresponse obj
 	 Response.Error error = new Response.Error(0,"");
