@@ -185,6 +185,7 @@ XML Created Sucessfully
 		BigInteger account = new BigInteger("56855"); 
 		String type = "type_deposit"; 
 		String id= "id_ach";
+		id = "id_cc";
 		String subid= null; //"subid_none";
 		Integer fundingmethodid = null; //6545; // can be missing
 		//prepare Details
@@ -192,13 +193,14 @@ XML Created Sucessfully
 		TransactionSendRequestParam.Details.Field field1 = new TransactionSendRequestParam.Details.Field("name_abanumber", "1129000");
 		TransactionSendRequestParam.Details.Field field2 = new TransactionSendRequestParam.Details.Field("name_accountnumber", "6789000");
 		TransactionSendRequestParam.Details.Field field3 = new TransactionSendRequestParam.Details.Field("name_checknumber", "1234");
-		fields.add(field1); fields.add(field2);  fields.add(field3);
+		TransactionSendRequestParam.Details.Field field4 = new TransactionSendRequestParam.Details.Field("name_cardType", "visa");
+		fields.add(field1); fields.add(field2);  fields.add(field3); fields.add(field4);
 		Details details = new Details(fields);
 		//prepare Amount
 		List<Fee> fees = new ArrayList<Fee>();
 		Fee fee1 = new Fee("type_feedex", 5.25);
 		fees.add(fee1);
-		fees = null; //1st test case
+		// fees = null; //1st test case //comment out for 2nd test case
 		Amount amount = new Amount(10.00, fees);
 		//now create param
 		TransactionSendRequestParam transactionSendRequestParam = new TransactionSendRequestParam(account, type, id, subid, fundingmethodid, details, amount);
