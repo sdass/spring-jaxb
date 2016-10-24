@@ -183,7 +183,7 @@ XML Created Sucessfully
 	
 	public static void prepareTransactionRequestParamString() throws IOException{
 		BigInteger account = new BigInteger("56855"); 
-		String type = "type_deposit"; 
+		String type = "type_withdrawl"; //"type_deposit"; 
 		String id= "id_ach";
 		id = "credit"; //"id_cc";
 		String subid= null; //"subid_none";
@@ -203,8 +203,10 @@ XML Created Sucessfully
 		//prepare Amount
 		List<Fee> fees = new ArrayList<Fee>();
 		Fee fee1 = new Fee("type_feedex", 5.25);
-		fees.add(fee1);
-		 fees = null; //1st,  test case //comment out for 2nd 3rd test case
+		Fee fee2 = new Fee("type_feedex", 0.0);
+		//fees.add(fee1);
+		fees.add(fee2);
+		 //fees = null; //1st,  test case //comment out for 2nd 3rd, 7th and 8th test case
 		Amount amount = new Amount(10.00, fees);
 		//now create param
 		TransactionSendRequestParam transactionSendRequestParam = new TransactionSendRequestParam(account, type, id, subid, fundingmethodid, details, amount);
