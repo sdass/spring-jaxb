@@ -52,6 +52,7 @@ import com.drfbets.funding.model.TransactionSendRequestParam;
 import com.drfbets.funding.model.TransactionSendRequestParam.Amount;
 import com.drfbets.funding.model.TransactionSendRequestParam.Amount.Fee;
 import com.drfbets.funding.model.TransactionSendRequestParam.Details;
+import com.drfbets.funding.model.TransactionSendResponseResult;
 import com.subra.funding.model.CustomerPullRequestModel;
 import com.subra.funding.model.FmxrequestGen;
 import com.subra.funding.model.Fmxrequestempty;
@@ -83,11 +84,86 @@ public class ResponseRequestMainDriver {
 		
 		//prepGeneralOperationRequestParamString(); //must use this for compact design
 		//prepareGeneralOperationResponseString();
-		prepareTransactionRequestParamString();
+		//prepareTransactionRequestParamString();
+		//prepareTransactionSendResponseString();
 	//	checkRestcall();
 		
+		responsebodyToClassObjectTesting();
 		  System.out.println("XML Created Sucessfully");		
 		
+		
+	}
+	
+	public static void responsebodyToClassObjectTesting() {
+		//hard code quick test
+		//getTransactionObj();
+		//getCustomerObj();
+		//getAddressObj();
+		//getLimitObj();
+		getGeneralOpBalanceObj();
+	}
+	
+	public static void getTransactionObj(){
+		String xmlresponseBody ="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>201</code><mesg>Withdrawal for Account 123456 Failed: ACCOUNT BALANCE IS LESS THAN COST OF TRANSACTION</mesg></error> <category>transaction</category><function>send</function><result/></response></fmxresponse>"; 
+				// "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>transaction</category><function>send</function><result/></response></fmxresponse>";
+		log.info("xmlStr=\n" + xmlresponseBody);
+		// contaminated by static jaxb class initializer Fmxresponse<TransactionSendResponseResult> transactionResponseObj = (Fmxresponse<TransactionSendResponseResult>) marshaller.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		Jaxb2Marshaller marshaller2 = new Jaxb2Marshaller();
+		marshaller2.setClassesToBeBound( Fmxresponse.class, Response.class, TransactionSendResponseResult.class);
+		Fmxresponse<TransactionSendResponseResult> responseObj = (Fmxresponse<TransactionSendResponseResult>) marshaller2.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		log.info("responseObj=" + responseObj);
+					
+	}
+	public static void getCustomerObj(){
+		String xmlresponseBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>customer</category><function>pull</function> <result><field><name>vscharge</name><value>5.00</value></field><field><name>mccharge</name><value>5.00</value></field><field><name>fedexcharge</name><value>12.00</value></field><field><name>account</name><value>123456</value></field><field><name>firstname</name><value>John</value></field></result></response></fmxresponse>"; 
+		
+					//"<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>customer</category><function>pull</function> <result><field><name>vscharge</name><value>5.00</value></field><field><name>mccharge</name><value>5.00</value></field><field><name>fedexcharge</name><value>12.00</value></field><field><name>account</name><value>123456</value></field><field><name>firstname</name><value>John</value></field></result></response></fmxresponse>";
+				
+		log.info("xmlStr=\n" + xmlresponseBody);
+		// contaminated by static jaxb class initializer Fmxresponse<TransactionSendResponseResult> transactionResponseObj = (Fmxresponse<TransactionSendResponseResult>) marshaller.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		Jaxb2Marshaller marshaller2 = new Jaxb2Marshaller();
+		marshaller2.setClassesToBeBound( Fmxresponse.class, Response.class, CustomerPullResponseResult.class);
+		Fmxresponse<CustomerPullResponseResult> responseObj = (Fmxresponse<CustomerPullResponseResult>) marshaller2.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		log.info("responseObj=" + responseObj);
+					
+	}
+	public static void getLimitObj(){ //passed no  coma
+		String xmlresponseBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>limit</category><function>available</function><result> <limit><fundingmethodid>3963</fundingmethodid><timeframe>none</timeframe><type>ach</type><authorized>1</authorized><remaining><amount>489.00</amount><number>999</number></remaining> </limit><limit> <fundingmethodid>64526</fundingmethodid><timeframe>weekly</timeframe><type>cc</type><authorized>1</authorized><remaining><amount>10000.00</amount><number>999</number></remaining> </limit></result></response></fmxresponse>";  
+		//passed no coma
+		
+		log.info("xmlStr=\n" + xmlresponseBody);
+		// contaminated by static jaxb class initializer Fmxresponse<TransactionSendResponseResult> transactionResponseObj = (Fmxresponse<TransactionSendResponseResult>) marshaller.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		Jaxb2Marshaller marshaller2 = new Jaxb2Marshaller();
+		marshaller2.setClassesToBeBound( Fmxresponse.class, Response.class, LimitAvailableResponseResult.class);
+		Fmxresponse<LimitAvailableResponseResult> responseObj = (Fmxresponse<LimitAvailableResponseResult>) marshaller2.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		log.info("responseObj=" + responseObj);
+	}
+
+	public static void getGeneralOpBalanceObj(){
+		String xmlresponseBody = //no coma works "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>generaloperation</category><function>balance</function><result><balance> <type>current</type><amount>1314.40</amount></balance></result></response></fmxresponse>";
+				// amount coma problem "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>generaloperation</category><function>balance</function><result><balance> <type>current</type><amount>1,314.40</amount></balance></result></response></fmxresponse>"; 
+		
+					//coma problem "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>generaloperation</category><function>balance</function><result><balance><type>current</type> <amount>1,314.40</amount></balance><balance><type>available</type><amount>1,314.40</amount></balance></result></response></fmxresponse>";
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>generaloperation</category><function>balance</function><result><balance><type>current</type> <amount>1314.40</amount></balance><balance><type>available</type><amount>1314.40</amount></balance></result></response></fmxresponse>";
+				
+		log.info("xmlStr=\n" + xmlresponseBody);
+		// contaminated by static jaxb class initializer Fmxresponse<TransactionSendResponseResult> transactionResponseObj = (Fmxresponse<TransactionSendResponseResult>) marshaller.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		Jaxb2Marshaller marshaller2 = new Jaxb2Marshaller();
+		marshaller2.setClassesToBeBound( Fmxresponse.class, Response.class, GeneralOperationResponseResult.class);
+		Fmxresponse<GeneralOperationResponseResult> responseObj = (Fmxresponse<GeneralOperationResponseResult>) marshaller2.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		log.info("responseObj=" + responseObj);
+	}
+	
+	public static void getAddressObj(){
+		String xmlresponseBody ="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>address</category><function>pull</function> <result><address><type>residence</type><field><name>account</name><value>123456</value></field><field><name>address</name><value>123 sample street</value></field> <field><name>city</name><value>sample city</value></field><field><name>state</name><value>sample state abbreviation</value></field><field><name>zip</name><value>sample zip code</value></field> <field><name>country</name><value>sample country abbreviation</value></field></address><address><type>mailing</type><field><name>account</name><value>123456</value></field> <field><name>address</name><value>123 mailing street</value></field><field><name>city</name><value>mailing city</value></field> <field><name>state</name><value>mailing state abbreviation</value></field><field><name>zip</name><value>mailing zip</value></field><field><name>country</name><value>mailing country abbreviation</value></field> </address></result></response></fmxresponse>"; 
+				
+		log.info("xmlStr=\n" + xmlresponseBody);
+		// contaminated by static jaxb class initializer Fmxresponse<TransactionSendResponseResult> transactionResponseObj = (Fmxresponse<TransactionSendResponseResult>) marshaller.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		Jaxb2Marshaller marshaller2 = new Jaxb2Marshaller();
+		marshaller2.setClassesToBeBound( Fmxresponse.class, Response.class, AddressPullResponseResult.class);
+		Fmxresponse<AddressPullResponseResult> transactionResponseObj = (Fmxresponse<AddressPullResponseResult>) marshaller2.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		log.info("transactionResponseObj=" + transactionResponseObj);
+					
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -232,6 +308,34 @@ XML Created Sucessfully
 		
 	}
 	
+	public static void prepareTransactionSendResponseString() throws XmlMappingException,  IOException {
+		//1. prep result as null
+		TransactionSendResponseResult transactionSendResponseResult = new TransactionSendResponseResult(); // null
+		//2. prepare response
+		//Response.Error error = new Response.Error(0, "");
+		Response.Error error = new Response.Error(201, "Error message");
+		Response<TransactionSendResponseResult> response = new Response<TransactionSendResponseResult>(error, "category_name", "function_name", transactionSendResponseResult);
+		List<Response<TransactionSendResponseResult>> responseList = new ArrayList<Response<TransactionSendResponseResult>> ();
+		responseList.add(response);
+		//4. fillup Fmxresponse
+		Fmxresponse<TransactionSendResponseResult> fmxresponseObj = new Fmxresponse<TransactionSendResponseResult>(responseList);
+		log.info("whatObj=" + fmxresponseObj);
+		//System.exit(1);
+		
+		//more flexible
+		StringWriter strWriterForXml = new StringWriter().append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+		strWriterForXml.append("\n"); //for debugging only
+		StreamResult xmlStringWriter = new StreamResult(strWriterForXml);
+		marshaller.marshal(fmxresponseObj, xmlStringWriter); //statically created
+		String transactionResponseStrBuffer = xmlStringWriter.getWriter().toString();
+		log.info("transactionResponseStrBuffer=" + transactionResponseStrBuffer);
+		FileWriter xmlFileWriter = new FileWriter("transactionResponseStrBuffer.xml");
+		xmlFileWriter.write(transactionResponseStrBuffer); xmlFileWriter.flush();
+		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+		
+		
+	}
+	
 	
 	public static void prepareLimitRequestParamString() throws XmlMappingException, IOException{
 		//use this of jaxb for flexible manipulation
@@ -301,6 +405,7 @@ XML Created Sucessfully
 				CustomerPullResponseResult.class,
 				FundingMethodPullResponseResult.class,
 				LimitAvailableResponseResult.class,
+				TransactionSendResponseResult.class,
 				GeneralOperationResponseResult.class,
 				TransactionSendRequestParam.class
 				
