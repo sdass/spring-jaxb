@@ -41,23 +41,32 @@ import javax.xml.bind.annotation.XmlType;
             }
 
             @XmlAccessorType(XmlAccessType.FIELD)
-            @XmlType(name = "", propOrder = {   "type",    "amount"    })
+           // @XmlType(name = "", propOrder = {   "type",    "amount"    })
+            @XmlType(name = "", propOrder = {   "type",    "amount" , "damount"   })
             public static class Balance {
 
                 @XmlElement(required = true)
                 protected String type;
                 @XmlElement(required = true)
-                protected Double amount;
-
+               // protected Double amount;
+                protected String amount;
                 
+                @XmlElement(required=false)
+                protected Double damount;
+
                 public Balance() {
 					super();
+					System.out.println("-------------------1----------------------");
 				}
                 
-				public Balance(String type, Double amount) {
+				//public Balance(String type, Double amount) {
+                public Balance(String type, String amount) {
 					super();
 					this.type = type;
 					this.amount = amount;
+/*					String strBalance = amount.replaceAll(",", "");
+					System.out.println("-------------------2----------------------");
+					this.damount = Double.valueOf(strBalance);*/
 				}
 
 
@@ -69,17 +78,32 @@ import javax.xml.bind.annotation.XmlType;
                     this.type = value;
                 }
             
-                public Double getAmount() {
+                //public Double getAmount() {
+                public String getAmount() {
                     return amount;
                 }
 
-                public void setAmount(Double value) {
+//                public void setAmount(Double value) {
+                public void setAmount(String value) {
+                	//System.out.println("-------------------3----------------------");
                     this.amount = value;
+                   // this.damount = Double.valueOf(value);
                 }
 
 				@Override
 				public String toString() {
-					return "Balance [type=" + type + ", amount=" + amount + "]";
+					//System.out.println("-------------------4----------------------");
+					return "Balance [type=" + type + ", amount=" + amount + ", double-amount=" + damount +  "]";
+				}
+
+				public Double getDamount() {
+					//System.out.println("-------------------5----------------------");
+					return damount;
+				}
+
+				public void setDamount(Double damount) {
+					//System.out.println("-------------------6----------------------");
+					this.damount = damount;
 				}
 
             }

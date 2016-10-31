@@ -18,6 +18,8 @@ import java.util.Map;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.json.JSONObject;
+import org.json.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -88,10 +90,24 @@ public class ResponseRequestMainDriver {
 		//prepareTransactionSendResponseString();
 	//	checkRestcall();
 		
-		responsebodyToClassObjectTesting();
-		  System.out.println("XML Created Sucessfully");		
+		//responsebodyToClassObjectTesting();
+		  System.out.println("XML Created Sucessfully");
+		  checkDBLogging();
 		
 		
+	}
+	
+	public static void checkDBLogging(){
+		String responseStr = "abcdefghijklmnopqrstuvwx";
+		String requestStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest><general><timestamp>2016-10-18 12:57:48</timestamp> <auth><username>mmmmm</username><password>yyyyy</password></auth></general><request><category>transaction</category><function>send</function><param> <account>7777</account><type>deposit</type><id>cc</id><details><field><name>cardtype</name><value>visa</value></field><field> <name>cardnumber</name><value>9111111111111111</value></field><field><name>cvccode</name><value>111</value></field><field> <name>expirationmonth</name><value>09</value></field><field><name>expirationyear</name><value>2015</value></field></details><amount> <base>10.00</base><fee><type>cccharge</type><amount>1.00</amount></fee></amount></param></request></fmxrequest>";
+		
+		String requestStrwhilespace = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fmxrequest> <general><timestamp>2016-10-18 12:57:48</timestamp> <auth>  <username>drfbets</username><password>2abcdef</password></auth></general><request><category>transaction</category><function>send</function><param> <account>88888</account><type>deposit</type><id>cc</id><details><field><name>cardtype</name><value>visa</value></field><field> <name>cardnumber</name><value>9111111111111111</value></field><field><name>cvccode</name><value>111</value></field><field> <name>expirationmonth</name><value>09</value></field><field><name>expirationyear</name><value>2015</value></field></details><amount> <base>10.00</base><fee><type>cccharge</type><amount>1.00</amount></fee></amount></param></request></fmxrequest>";
+		//String maskedString = DBLoggingUtil.responseMasking(responseStr, ResponseCategory.Transaction);
+		//String maskedreq = DBLoggingUtil.requestMasking(requestStr, Category.Transaction);
+		String maskedreq = DBLoggingUtil.requestMasking(requestStrwhilespace, Category.Transaction);
+		System.out.println("maskedreq=" + maskedreq);
+		System.out.println("requestStr=" + requestStr);
+		//String maskedresponse = DBLoggingUtil.responseMasking(responseStr, Category.AddressPull);
 	}
 	
 	public static void responsebodyToClassObjectTesting() {
@@ -100,7 +116,63 @@ public class ResponseRequestMainDriver {
 		//getCustomerObj();
 		//getAddressObj();
 		//getLimitObj();
-		getGeneralOpBalanceObj();
+		//getGeneralOpBalanceObj();
+		//getMethodPullResponseObj();
+		getMethodEditResponseObj();
+		//getMethodDeleteResponseObj();
+	}
+	
+	public static void getMethodDeleteResponseObj(){
+		// /*passed error string */ String xmlresponseBody ="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>fundingmethod</category><function>delete</function><result/></response></fmxresponse>"; 
+		String xmlresponseBody =  /*passed */   "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>5</code><mesg>Invalid fundingmethodid for this account.</mesg></error><category>fundingmethod</category><function>delete</function> <result/></response></fmxresponse>";
+		log.info("xmlStr=\n" + xmlresponseBody);
+		// contaminated by static jaxb class initializer Fmxresponse<TransactionSendResponseResult> transactionResponseObj = (Fmxresponse<TransactionSendResponseResult>) marshaller.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		Jaxb2Marshaller marshaller2 = new Jaxb2Marshaller();
+		marshaller2.setClassesToBeBound( Fmxresponse.class, Response.class, FundingMethodPullResponseResult.class);
+		Fmxresponse<FundingMethodPullResponseResult> responseObj = (Fmxresponse<FundingMethodPullResponseResult>) marshaller2.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		log.info("responseObj=" + responseObj);
+			
+		
+		
+	}
+	
+	public static void getMethodEditResponseObj(){ //passed
+		// /*passed error string */ String xmlresponseBody ="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>5</code><mesg>Invalid fundingmethodid for this account.</mesg></error><category>fundingmethod</category><function>edit</function> <result/></response></fmxresponse>"; 
+		String xmlresponseBody =  /*passed */   "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>fundingmethod</category><function>edit</function><result/></response></fmxresponse>";
+		log.info("xmlStr=\n" + xmlresponseBody);
+		// contaminated by static jaxb class initializer Fmxresponse<TransactionSendResponseResult> transactionResponseObj = (Fmxresponse<TransactionSendResponseResult>) marshaller.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		Jaxb2Marshaller marshaller2 = new Jaxb2Marshaller();
+		marshaller2.setClassesToBeBound( Fmxresponse.class, Response.class, FundingMethodPullResponseResult.class);
+		Fmxresponse<FundingMethodPullResponseResult> responseObj = (Fmxresponse<FundingMethodPullResponseResult>) marshaller2.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		log.info("responseObj=" + responseObj);
+		//String oldStr = "<\\?*version=*\\?>"; String newStr = "";
+		String oldStr = "<\\?*\\?>"; String newStr = "";
+		//String xmlnoHead = "<fmxresponse><response><error><code>0</code><mesg></mesg></error><category>fundingmethod</category><function>edit</function><result/></response></fmxresponse>";
+		String xmlStr = xmlresponseBody;
+		String xmlnoHeader = xmlStr.replace(oldStr, newStr);
+		System.out.println("xmlnoHeader=" + xmlnoHeader);
+		printJson(xmlnoHeader);			
+		
+	}
+	//public static void printJson(String xmlString){
+	public static void printJson(String xmlString){
+		
+		JSONObject jsonStr = XML.toJSONObject(xmlString);
+		//XML.t
+		String jsonprettyStr = jsonStr.toString(4); //(4);//indentfactor PRETTY_PRINT_INDENT_FACTOR=4
+		System.out.println("jsonprettyStr=" + jsonprettyStr);
+	}
+	
+	public static void getMethodPullResponseObj(){ //passed
+		String xmlresponseBody ="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>fundingmethod</category><function>pull</function><result><fundingmethod><id>64526</id> <field><name>account</name><value>123456</value></field><field><name>type</name><value>cc</value></field><field><name>subtype</name><value>visa</value></field> <field><name>ccexpdate</name><value>2018-04-01</value></field><field><name>accountnum</name><value>4111111111111111</value></field><field><name>active</name> <value>1</value></field></fundingmethod><fundingmethod><id>111888</id><field><name>account</name><value>123456</value></field><field><name>type</name> <value>cc</value></field><field><name>subtype</name><value>mastercard</value></field><field><name>ccexpdate</name><value>2010-10-01</value></field><field> <name>accountnum</name><value>51111111111111111</value></field><field><name>active</name><value>0</value></field></fundingmethod></result></response></fmxresponse>"; 
+		// "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>transaction</category><function>send</function><result/></response></fmxresponse>";
+		log.info("xmlStr=\n" + xmlresponseBody);
+		// contaminated by static jaxb class initializer Fmxresponse<TransactionSendResponseResult> transactionResponseObj = (Fmxresponse<TransactionSendResponseResult>) marshaller.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		Jaxb2Marshaller marshaller2 = new Jaxb2Marshaller();
+		marshaller2.setClassesToBeBound( Fmxresponse.class, Response.class, FundingMethodPullResponseResult.class);
+		Fmxresponse<FundingMethodPullResponseResult> responseObj = (Fmxresponse<FundingMethodPullResponseResult>) marshaller2.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		log.info("responseObj=" + responseObj);
+		
 	}
 	
 	public static void getTransactionObj(){
@@ -143,16 +215,38 @@ public class ResponseRequestMainDriver {
 		String xmlresponseBody = //no coma works "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>generaloperation</category><function>balance</function><result><balance> <type>current</type><amount>1314.40</amount></balance></result></response></fmxresponse>";
 				// amount coma problem "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>generaloperation</category><function>balance</function><result><balance> <type>current</type><amount>1,314.40</amount></balance></result></response></fmxresponse>"; 
 		
-					//coma problem "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>generaloperation</category><function>balance</function><result><balance><type>current</type> <amount>1,314.40</amount></balance><balance><type>available</type><amount>1,314.40</amount></balance></result></response></fmxresponse>";
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>generaloperation</category><function>balance</function><result><balance><type>current</type> <amount>1314.40</amount></balance><balance><type>available</type><amount>1314.40</amount></balance></result></response></fmxresponse>";
+					//coma problem below
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>generaloperation</category><function>balance</function><result><balance><type>current</type> <amount>1,314.40</amount></balance><balance><type>available</type><amount>1,314.40</amount></balance></result></response></fmxresponse>";
+				//"<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>generaloperation</category><function>balance</function><result><balance><type>current</type> <amount>1314.40</amount></balance><balance><type>available</type><amount>1314.40</amount></balance></result></response></fmxresponse>";
 				
 		log.info("xmlStr=\n" + xmlresponseBody);
 		// contaminated by static jaxb class initializer Fmxresponse<TransactionSendResponseResult> transactionResponseObj = (Fmxresponse<TransactionSendResponseResult>) marshaller.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
 		Jaxb2Marshaller marshaller2 = new Jaxb2Marshaller();
 		marshaller2.setClassesToBeBound( Fmxresponse.class, Response.class, GeneralOperationResponseResult.class);
 		Fmxresponse<GeneralOperationResponseResult> responseObj = (Fmxresponse<GeneralOperationResponseResult>) marshaller2.unmarshal(new StreamSource(new StringBufferInputStream(xmlresponseBody)));
+		
 		log.info("responseObj=" + responseObj);
+		//Fmxresponse<GeneralOperationResponseResult> respModified = responseObj.getResponse();
+		
+	//Modify/ Adding new field amount as double works below // cumbersome and costly operation	
+	List<Response<GeneralOperationResponseResult>> respModifiedList = responseObj.getResponse();
+	for( Response<GeneralOperationResponseResult> response : respModifiedList){
+		GeneralOperationResponseResult result = response.getResult();
+		List<Balance> balanceList =  result.getBalance();
+		for ( Balance balance: balanceList){
+			String strBalance = balance.getAmount();
+			strBalance = strBalance.replaceAll(",", "");
+			log.info("StringBalance=" + strBalance );
+			balance.setDamount(new Double(strBalance));
+		}
+		//log.info("hdfd=" + response.toString());
+		
 	}
+	log.info("After double amount responseObj=" + responseObj);
+	
+	
+	
+  }//
 	
 	public static void getAddressObj(){
 		String xmlresponseBody ="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <fmxresponse><response><error><code>0</code><mesg></mesg></error><category>address</category><function>pull</function> <result><address><type>residence</type><field><name>account</name><value>123456</value></field><field><name>address</name><value>123 sample street</value></field> <field><name>city</name><value>sample city</value></field><field><name>state</name><value>sample state abbreviation</value></field><field><name>zip</name><value>sample zip code</value></field> <field><name>country</name><value>sample country abbreviation</value></field></address><address><type>mailing</type><field><name>account</name><value>123456</value></field> <field><name>address</name><value>123 mailing street</value></field><field><name>city</name><value>mailing city</value></field> <field><name>state</name><value>mailing state abbreviation</value></field><field><name>zip</name><value>mailing zip</value></field><field><name>country</name><value>mailing country abbreviation</value></field> </address></result></response></fmxresponse>"; 
@@ -267,9 +361,9 @@ XML Created Sucessfully
 		Integer fundingmethodid = null; //6545; // can be missing
 		//prepare Details
 		List<TransactionSendRequestParam.Details.Field> fields = new ArrayList<TransactionSendRequestParam.Details.Field>();
-		TransactionSendRequestParam.Details.Field field1 = new TransactionSendRequestParam.Details.Field("name_abanumber", "1129000");
-		TransactionSendRequestParam.Details.Field field2 = new TransactionSendRequestParam.Details.Field("name_accountnumber", "6789000");
-		TransactionSendRequestParam.Details.Field field3 = new TransactionSendRequestParam.Details.Field("name_checknumber", "1234");
+		TransactionSendRequestParam.Details.Field field1 = new TransactionSendRequestParam.Details.Field("name_abanumber", "1111000");
+		TransactionSendRequestParam.Details.Field field2 = new TransactionSendRequestParam.Details.Field("name_accountnumber", "7770000");
+		TransactionSendRequestParam.Details.Field field3 = new TransactionSendRequestParam.Details.Field("name_checknumber", "1111");
 		TransactionSendRequestParam.Details.Field field4 = new TransactionSendRequestParam.Details.Field("name_cardType", "visa");
 		TransactionSendRequestParam.Details.Field field5 = new TransactionSendRequestParam.Details.Field("note", "Test note");
 		//comment out for 3rd test case fields.add(field1); fields.add(field2);  fields.add(field3); fields.add(field4);
@@ -355,7 +449,7 @@ XML Created Sucessfully
 		//String timestamp = new Timestamp(new Date().getTime()).toString();	
 		String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());	
 
-		objLimitAvalableRequest.setGeneral(new General(timestamp, new General.Auth("sdass", "qqq123")));
+		objLimitAvalableRequest.setGeneral(new General(timestamp, new General.Auth("sdass", "mmm123")));
 		System.out.println("whatObj= " + objLimitAvalableRequest.toString());
 
 		// execute for jaxb done
@@ -613,9 +707,16 @@ XML Created Sucessfully
 	
 	public static void prepareGeneralOperationResponseString() throws IOException{
 	 //prepre result
+/*
 	 Balance balance1 = new Balance("current", 1314.20);
 	 Balance balance2 = new Balance("availble", 900.00);
+	*/
+	 Balance balance1 = new Balance("current", "1,314.20");
+	 Balance balance2 = new Balance("availble", "900.00");
+
+	 
 	 List<Balance> balanceList = new ArrayList<Balance>();
+	 
 	 balanceList.add(balance1);
 	 balanceList.add(balance2); //commented out for test case1.
 	 GeneralOperationResponseResult generalOperationResponseResult = new GeneralOperationResponseResult(balanceList);
